@@ -1,0 +1,11 @@
+﻿CREATE USER [demoUser]
+	FOR LOGIN [demoUser]
+	WITH DEFAULT_SCHEMA = dbo
+
+GO
+
+GRANT CONNECT TO [demoUser]
+GO
+GRANT SELECT TO [demoUser]
+GO
+GRANT EXECUTE TO [demoUser]

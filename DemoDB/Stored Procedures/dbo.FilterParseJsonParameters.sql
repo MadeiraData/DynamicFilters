@@ -28,10 +28,8 @@ EXEC dbo.FilterParseJsonParameters @SourceTableAlias = 'Members', @JsonParams = 
 
 PRINT @SQL
 
-EXEC sp_executesql @SQL, N'@JsonParams NVARCHAR(MAX)', @JsonParams
-
 */
-CREATE PROCEDURE FilterParseJsonParameters
+CREATE PROCEDURE [dbo].[FilterParseJsonParameters]
 	@SourceTableAlias	SYSNAME,				-- the alias of the table from FilterTables to be used as the source
 	@JsonParams			NVARCHAR(MAX),			-- the JSON definition of the parameter values
 	@JsonOrdering		NVARCHAR(MAX) = NULL,	-- the JSON definition of the column ordering (optional)
@@ -39,128 +37,32 @@ CREATE PROCEDURE FilterParseJsonParameters
 	@Offset				INT = 1,
 	@ParsedSQL			NVARCHAR(MAX) OUTPUT,	-- returns the parsed SQL command to be used for sp_executesql.
 	@ForceRecompile		BIT = 1,				-- forces the query to do parameter sniffing using OPTION(RECOMPILE)
-	@RowNumberColumn	SYSNAME = 'RowNumber'	-- you can optionally change the name of the RowNumber column used for pagination (to avoid collision with existing columns)
+	@RowNumberColumn	SYSNAME = 'RowNumber',	-- you can optionally change the name of the RowNumber column used for pagination (to avoid collision with existing columns)
+	@RunCommand			BIT = 1					-- determines whether to run the parsed command (otherwise just output the command w/o running it)
 AS
+SET XACT_ABORT ON;
+SET ARITHABORT ON;
 SET NOCOUNT ON;
 -- Init variables
-DECLARE 
-	@SourceTableName SYSNAME,
-	@PageOrdering NVARCHAR(MAX),
-	@FilterString NVARCHAR(MAX), 
-	@FilterTablesString NVARCHAR(MAX), 
-	@FilterParamInit NVARCHAR(4000)
+DECLARE @TVPParams dbo.UDT_FilterParameters, @TVPOrdering dbo.UDT_ColumnOrder
 
-SET @FilterString = N'';
-SET @FilterTablesString = N'';
+-- Parse the JSON into a relational structures
 
-SELECT @SourceTableName = FilterTableName
-FROM FilterTables
-WHERE FilterTableAlias = @SourceTableAlias
-
-IF @SourceTableName IS NULL
-BEGIN
-	RAISERROR(N'Table %s was not found in definitions',16,1,@SourceTableAlias);
-	RETURN -1;
-END
-
--- Prepare the ORDER BY clause (save in indexed temp table to ensure sort)
-DECLARE @SortedColumns AS TABLE (ColumnRealName SYSNAME, IsAscending BIT, ColumnIndex BIGINT PRIMARY KEY);
-
-INSERT INTO @SortedColumns
+INSERT INTO @TVPOrdering
 SELECT
-	FilterColumns.ColumnRealName, Q.IsAscending, Q.ColumnIndex
+	ColumnIndex			= [key],
+	OrderingColumnID	= CONVERT(int, JSON_VALUE([value], '$.columnId')),
+	IsAscending			= CONVERT(bit, JSON_VALUE([value], '$.isAscending'))
 FROM
-(
-	SELECT
-		ColumnIndex			= [key],
-		OrderingColumnID	= CONVERT(int, JSON_VALUE([value], '$.columnId')),
-		IsAscending			= CONVERT(bit, JSON_VALUE([value], '$.isAscending'))
-	FROM
-		OPENJSON(@JsonOrdering, '$.OrderingColumns')
-) AS Q
-JOIN
-	FilterColumns
-ON
-	Q.OrderingColumnID = FilterColumns.ColumnID
-INNER JOIN
-	FilterTables
-ON
-	FilterColumns.ColumnFilterTableAlias = FilterTables.FilterTableAlias
-WHERE
-	FilterColumns.ColumnSortEnabled = 1
-AND FilterColumns.ColumnFilterTableAlias = @SourceTableAlias
+	OPENJSON(@JsonOrdering, '$.OrderingColumns')
 
+INSERT INTO @TVPParams
 SELECT
-	@PageOrdering = ISNULL(@PageOrdering + N', ',N'') + ColumnRealName + N' ' + CASE WHEN IsAscending = 1 THEN 'ASC' ELSE 'DESC' END
-FROM @SortedColumns
-
-IF @PageOrdering IS NULL
-	SET @PageOrdering = '(SELECT NULL)'
-
--- Parse filtering
-SELECT
-	@FilterParamInit = ISNULL(@FilterParamInit, '') + N'
-DECLARE @p' + ParamIndex +
-
-		-- If operand is multi-valued, declare local variable as a temporary table
-		CASE WHEN FilterPredicates.IsMultiValue = 1 THEN
-			N' TABLE ([Value] ' + FilterColumns.ColumnSqlDataType + N');
-			INSERT INTO @p' + ParamIndex + N'
-			SELECT CONVERT(' + FilterColumns.ColumnSqlDataType + N', b.[value])
-			FROM OPENJSON(@JsonParams, ''$.Parameters'') AS a
-			CROSS APPLY OPENJSON(a.[value], ''$.Value'') AS b WHERE a.[key] = ' + ParamIndex + N';
-			'
-		
-		-- Otherwise, declare the local variable as a regular variable.
-		ELSE
-			N' ' + FilterColumns.ColumnSqlDataType + N';
-			SELECT @p' + ParamIndex + N' = CONVERT(' + FilterColumns.ColumnSqlDataType + N', JSON_VALUE([value], ''$.Value'')) FROM OPENJSON(@JsonParams, ''$.Parameters'') WHERE [key] = ' + ParamIndex + N';
-			'
-		END
-		,
-	-- Parse the operand template by replacing the placeholders
-	@FilterString = @FilterString + N'
-	AND ' + REPLACE(
-			REPLACE(
-			FilterPredicates.PredicateTemplate
-			, '{Column}',FilterColumns.ColumnRealName)
-			, '{Parameter}', '@p' + ParamIndex)
+	ParamIndex			= [key],
+	FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.columnId')),
+	FilterPredicateID	= CONVERT(int, JSON_VALUE([value], '$.operatorId'))
 FROM
-	(
-		-- This parses the XML into a relational structure
-		SELECT
-			ParamIndex			= CONVERT(nvarchar(max), [key]) COLLATE database_default,
-			FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.columnId')),
-			FilterPredicateID	= CONVERT(int, JSON_VALUE([value], '$.operatorId'))
-		FROM
-			OPENJSON(@JsonParams, '$.Parameters')
-	) AS ParamValues
-JOIN
-	FilterColumns
-ON
-	ParamValues.FilterColumnID = FilterColumns.ColumnID
-JOIN
-	FilterPredicates
-ON
-	ParamValues.FilterPredicateID = FilterPredicates.PredicateID
-INNER JOIN
-	FilterTables
-ON
-	FilterColumns.ColumnFilterTableAlias = FilterTables.FilterTableAlias
-WHERE
-	FilterColumns.ColumnFilterTableAlias = @SourceTableAlias
+	OPENJSON(@JsonParams, '$.Parameters')
 
--- Construct the final parsed SQL command
-SET @ParsedSQL = ISNULL(@FilterParamInit, '') + N'
-SELECT * FROM
-(SELECT Main.*, ' + QUOTENAME(@RowNumberColumn) + N' = ROW_NUMBER() OVER( ORDER BY ' + @PageOrdering + N' )
-FROM ' + @SourceTableName + N' AS Main
-WHERE 1=1 ' + ISNULL(@FilterString,'') + N'
-) AS Q
-WHERE '+ QUOTENAME(@RowNumberColumn) + N' BETWEEN ' + CONVERT(nvarchar(50), @Offset) + N' AND ' + CONVERT(nvarchar(50), @Offset + @PageSize - 1) + N'
-ORDER BY ' + QUOTENAME(@RowNumberColumn);
-
--- Optionally add RECOMPILE hint
-IF @ForceRecompile = 1
-	SET @ParsedSQL = @ParsedSQL + N'
-OPTION (RECOMPILE)'
+-- Run the actual procedure with table-valued-parameters
+EXEC dbo.FilterParseTVPParameters @SourceTableAlias, @TVPParams, @TVPOrdering, @PageSize, @Offset, @ParsedSQL OUTPUT, @ForceRecompile, @RowNumberColumn, @RunCommand

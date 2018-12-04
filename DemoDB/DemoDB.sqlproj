@@ -123,6 +123,9 @@
     <Folder Include="Security\" />
     <Folder Include="Folder" />
     <Folder Include="Views\" />
+    <Folder Include="Security\Logins" />
+    <Folder Include="Security\Users" />
+    <Folder Include="User Defined Types\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Lists.Countries.sql">
@@ -204,6 +207,14 @@
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
+    <Build Include="Security\Logins\DemoUser.sql" />
+    <Build Include="Security\Users\demoUser.sql" />
+    <Build Include="Stored Procedures\FilterParseTVPParameters.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="User Defined Types\UDT_FilterParameters.sql" />
+    <Build Include="User Defined Types\UDT_ColumnOrder.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Folder\FilterParseJsonParameters_Setup.sql" />
