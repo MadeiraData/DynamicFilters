@@ -121,7 +121,7 @@
     <Folder Include="Tables\" />
     <Folder Include="Stored Procedures\" />
     <Folder Include="Security\" />
-    <Folder Include="Folder" />
+    <Folder Include="Scripts" />
     <Folder Include="Views\" />
     <Folder Include="Security\Logins" />
     <Folder Include="Security\Users" />
@@ -209,14 +209,15 @@
     </Build>
     <Build Include="Security\Logins\DemoUser.sql" />
     <Build Include="Security\Users\demoUser.sql" />
-    <Build Include="Stored Procedures\FilterParseTVPParameters.sql">
+    <Build Include="Stored Procedures\dbo.FilterParseTVPParameters.sql">
       <AnsiNulls>On</AnsiNulls>
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
-    <Build Include="User Defined Types\UDT_FilterParameters.sql" />
-    <Build Include="User Defined Types\UDT_ColumnOrder.sql" />
+    <Build Include="User Defined Types\dbo.UDT_FilterParameters.sql" />
+    <Build Include="User Defined Types\dbo.UDT_ColumnOrder.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Folder\FilterParseJsonParameters_Setup.sql" />
+    <None Include="Scripts\FilterParseJsonParameters_Setup.sql" />
+    <None Include="Scripts\FilterParseTVPParameters_Setup.sql" />
   </ItemGroup>
 </Project>
