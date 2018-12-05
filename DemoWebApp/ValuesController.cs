@@ -14,7 +14,7 @@ namespace DemoWebApp
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "Hello", "World" };
+            return new string[] { "Bro", "Yes", "I", "Code" };
         }
     }
 }
