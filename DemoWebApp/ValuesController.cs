@@ -24,7 +24,7 @@ namespace DemoWebApp
     public int ColumnID { get; set; }
     public string DisplayName { get; set; }
     public bool SortEnabled { get; set; }
-    public string[] SupportedFilterPredicates { get; set; }
+    public string[] SupportedFilterOperators { get; set; }
     public List<ListValues> AvailableValues { get; set; }
   }
 
@@ -61,7 +61,7 @@ namespace DemoWebApp
       SqlConnection conn = new SqlConnection("Server=.;Database=DemoDB;Trusted_Connection=True;");
       conn.Open();
 
-      using (SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.FilterPredicates", conn))
+      using (SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.FilterOperators", conn))
       {
         DataSet ds = new DataSet();
         SqlDataAdapter da = new SqlDataAdapter(cmd);
@@ -72,8 +72,8 @@ namespace DemoWebApp
           rvOperators.Add(new FilterOperator()
           {
             isMultiValue = bool.Parse(item["IsMultiValue"].ToString()),
-            OperatorID = item["PredicateID"].ToString(),
-            Name = item["PredicateName"].ToString()
+            OperatorID = item["OperatorID"].ToString(),
+            Name = item["OperatorName"].ToString()
           });
         }
       }
@@ -114,7 +114,7 @@ namespace DemoWebApp
             ColumnID = int.Parse(item["ColumnID"].ToString()),
             DisplayName = item["ColumnDisplayName"].ToString(),
             SortEnabled = bool.Parse(item["ColumnSortEnabled"].ToString()),
-            SupportedFilterPredicates = item["ColumnSupportedFilterPredicates"].ToString().Replace(" ", string.Empty).Split(','),
+            SupportedFilterOperators = item["ColumnSupportedFilterOperators"].ToString().Replace(" ", string.Empty).Split(','),
             AvailableValues = Values
           });
         }

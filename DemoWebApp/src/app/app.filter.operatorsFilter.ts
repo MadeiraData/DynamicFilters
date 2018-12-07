@@ -11,6 +11,6 @@ export class filterSupportedOperators implements PipeTransform {
       return items;
     }
 
-    return items.filter(item => filtercollection.indexOf(item.OperatorID) !== -1);
+    return items.filter(item => filtercollection.indexOf(item.operatorID) !== -1);
   }
 }
