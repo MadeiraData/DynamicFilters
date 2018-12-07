@@ -9,11 +9,52 @@ import { Http } from '@angular/http'
 
 export class AppComponent implements OnInit {
   constructor(private _httpService: Http) { }
-  apiValues: string[] = [];
+  apiValues: {
+    filterColumns: any[], filterOperators: any[], savedFilterSet: any[]
+  };
+  listColumns: any[];
+  listOperators: any[];
+  stagingFilter: { columnID: any, operatorID: any, value: any[] };
   ngOnInit() {
     this._httpService.get('/api/values').subscribe(values => {
       this.apiValues = values.json();
+      this.stagingFilter = { columnID: "", operatorID: "", value: [] };
       console.log(this.apiValues);
+
+      let propsColumns = Object.keys(this.apiValues.filterColumns);
+      let propsOperators = Object.keys(this.apiValues.filterOperators);
+
+      this.listColumns = [];
+      this.listOperators = [];
+
+      for (let prop of propsColumns) {
+        if (prop && propsColumns[prop])
+        this.listColumns.push(propsColumns[prop]);
+      }
+
+      for (let prop of propsOperators) {
+        if (prop && propsOperators[prop])
+          this.listOperators.push(propsOperators[prop]);
+      }
+
+      console.log(this.listOperators);
     });
+  }
+
+  removeFilter(filterIndex: any) {
+    this.apiValues.savedFilterSet.splice(filterIndex,1);
+  }
+
+  onChangeStagingColumn(newID) {
+    this.stagingFilter.columnID = newID;
+    console.log("selected new column: " + newID);
+  }
+  onChangeStagingOperator(newID) {
+    this.stagingFilter.operatorID = newID;
+    console.log("selected new operator: " + newID);
+    if (!this.apiValues.filterOperators[newID].isMultiValue)
+      this.stagingFilter.value.push("");
+    else
+      this.stagingFilter.value = [];
   }
 }

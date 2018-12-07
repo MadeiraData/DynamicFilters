@@ -1,21 +1,50 @@
 <h1>Demo Web App</h1>
-<ul class="list-group">
-  <li class="list-group-item" *ngFor='let fc of apiValues.filterColumns'>
-    <div class="input-group" *ngIf='fc.supportedFilterOperators[0]!=""'>
-      <div class="input-group-append">
-        <span class="input-group-text">{{fc.displayName}}</span>
-      </div>
-      
-      <select class="select2 form-control">
-        <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name}}</option>
-      </select>
 
-      <input type="text" />
+
+<div class="form-group">
+  <div class="input-group" *ngFor="let f of apiValues.savedFilterSet; index as i">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><strong>{{apiValues.filterColumns[f.columnID].displayName}}</strong></span>
     </div>
-  </li>
-</ul>
-<script>
-  $(".select2").select2({
-    tags: true
-})
-</script>
+    <span class="input-group-text">{{apiValues.filterOperators[f.operatorID].name}}:</span>
+    <span class="form-control">{{f.value}}</span>
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="button" (click)="removeFilter(i)" title="Remove">&times;</button>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <div class="input-group">
+    <select class="form-control" #sc (change)="onChangeStagingColumn(sc.value)">
+      <option [value]="-1" [selected]="stagingFilter.columnID==''||stagingFilter.columnID=='-1'?true:false">Add condition on...</option>
+      <option *ngFor="let c of listColumns; index as i" [value]="c" [selected]="stagingFilter.columnID==c?true:false">{{apiValues.filterColumns[c].displayName}}</option>
+    </select>
+
+    <select class="form-control" #so (change)="onChangeStagingOperator(so.value)" *ngIf="stagingFilter.columnID!==''&&stagingFilter.columnID!=='-1'">
+      <option *ngFor="let op of apiValues.filterColumns[stagingFilter.columnID].supportedFilterOperators; index as i" [value]="op" [selected]="stagingFilter.operatorID==op?true:false">{{apiValues.filterOperators[op].name}}</option>
+    </select>
+
+    <!--<input class="form-control" #sv1 *ngIf="this.apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false" (ngModel)="stagingFilter.value[0]" />-->
+  </div>
+</div>
+
+  <!--
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor='let fc of apiValues.filterColumns'>
+      <div class="input-group" *ngIf='fc.supportedFilterOperators[0]!=""'>
+
+        <select class="select2 form-control">
+          <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name}}</option>
+        </select>
+
+        <input type="text" />
+      </div>
+    </li>
+  </ul>
+  <script>
+      $(".select2").select2({
+        tags: true
+      })
+  </script>
+  -->

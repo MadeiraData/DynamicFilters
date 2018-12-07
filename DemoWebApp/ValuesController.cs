@@ -44,9 +44,9 @@ namespace DemoWebApp
 
   public struct FiltersResultSet
   {
-    public IEnumerable<FilterColumn> FilterColumns { get; set; }
-    public IEnumerable<FilterOperator> FilterOperators { get; set; }
-    public IEnumerable<FilterParameterSet> SavedFilterSet { get; set; }
+    public Dictionary<string, FilterColumn> FilterColumns { get; set; }
+    public Dictionary<string, FilterOperator> FilterOperators { get; set; }
+    public List<FilterParameterSet> SavedFilterSet { get; set; }
   }
 
   [Route("api/[controller]")]
@@ -55,8 +55,8 @@ namespace DemoWebApp
     [HttpGet]
     public FiltersResultSet Get()
     {
-      List<FilterColumn> rvColumns = new List<FilterColumn>();
-      List<FilterOperator> rvOperators = new List<FilterOperator>();
+      Dictionary<string, FilterColumn> rvColumns = new Dictionary<string, FilterColumn>();
+      Dictionary<string, FilterOperator> rvOperators = new Dictionary<string, FilterOperator>();
       List<FilterParameterSet> rvFilters = new List<FilterParameterSet>();
       SqlConnection conn = new SqlConnection("Server=.;Database=DemoDB;Trusted_Connection=True;");
       conn.Open();
@@ -69,7 +69,7 @@ namespace DemoWebApp
 
         foreach (DataRow item in ds.Tables[0].Rows)
         {
-          rvOperators.Add(new FilterOperator()
+          rvOperators.Add(item["OperatorID"].ToString(), new FilterOperator()
           {
             isMultiValue = bool.Parse(item["IsMultiValue"].ToString()),
             OperatorID = item["OperatorID"].ToString(),
@@ -109,7 +109,7 @@ namespace DemoWebApp
             }
           }
 
-          rvColumns.Add(new FilterColumn()
+          rvColumns.Add(item["ColumnID"].ToString(), new FilterColumn()
           {
             ColumnID = int.Parse(item["ColumnID"].ToString()),
             DisplayName = item["ColumnDisplayName"].ToString(),
@@ -121,7 +121,17 @@ namespace DemoWebApp
       }
 
       conn.Close();
-      return new FiltersResultSet() { FilterColumns = rvColumns, FilterOperators = rvOperators };
+
+      // sample data
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 4, OperatorID = 1, Value = new string[] { "on" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 4, OperatorID = 4, Value = new string[] { "d" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 3, OperatorID = 3, Value = new string[] { "Br" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 6, OperatorID = 11, Value = new string[] { "2", "4" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 7, OperatorID = 9, Value = new string[] { "1" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 8, OperatorID = 9, Value = new string[] { "2" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 10, OperatorID = 5, Value = new string[] { "2017-01-01" } });
+
+      return new FiltersResultSet() { FilterColumns = rvColumns, FilterOperators = rvOperators, SavedFilterSet = rvFilters };
     }
 
     // GET api/<controller>/5
