@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="predicatesFilter.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -15,6 +19,9 @@
   </ItemGroup>
   <ItemGroup>
    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\app\app.filter.operatorsFilter.ts" />
   </ItemGroup>
 
 </Project>

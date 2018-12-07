@@ -19,7 +19,7 @@ namespace DemoWebApp
     public string group { get; set; }
   }
 
-  public struct FilterColumns
+  public struct FilterColumn
   {
     public int ColumnID { get; set; }
     public string DisplayName { get; set; }
@@ -28,15 +28,55 @@ namespace DemoWebApp
     public List<ListValues> AvailableValues { get; set; }
   }
 
+  public struct FilterOperator
+  {
+    public string OperatorID { get; set; }
+    public bool isMultiValue { get; set; }
+    public string Name { get; set; }
+  }
+
+  public struct FilterParameterSet
+  {
+    public int ColumnID { get; set; }
+    public int OperatorID { get; set; }
+    public string[] Value { get; set; }
+  }
+
+  public struct FiltersResultSet
+  {
+    public IEnumerable<FilterColumn> FilterColumns { get; set; }
+    public IEnumerable<FilterOperator> FilterOperators { get; set; }
+    public IEnumerable<FilterParameterSet> SavedFilterSet { get; set; }
+  }
+
   [Route("api/[controller]")]
   public class ValuesController : Controller
   {
     [HttpGet]
-    public IEnumerable<FilterColumns> Get()
+    public FiltersResultSet Get()
     {
-      List<FilterColumns> rv = new List<FilterColumns>();
+      List<FilterColumn> rvColumns = new List<FilterColumn>();
+      List<FilterOperator> rvOperators = new List<FilterOperator>();
+      List<FilterParameterSet> rvFilters = new List<FilterParameterSet>();
       SqlConnection conn = new SqlConnection("Server=.;Database=DemoDB;Trusted_Connection=True;");
       conn.Open();
+
+      using (SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.FilterPredicates", conn))
+      {
+        DataSet ds = new DataSet();
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        da.Fill(ds);
+
+        foreach (DataRow item in ds.Tables[0].Rows)
+        {
+          rvOperators.Add(new FilterOperator()
+          {
+            isMultiValue = bool.Parse(item["IsMultiValue"].ToString()),
+            OperatorID = item["PredicateID"].ToString(),
+            Name = item["PredicateName"].ToString()
+          });
+        }
+      }
 
       using (SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.FilterColumns WHERE ColumnFilterTableAlias = @Table", conn))
       {
@@ -69,7 +109,7 @@ namespace DemoWebApp
             }
           }
 
-          rv.Add(new FilterColumns()
+          rvColumns.Add(new FilterColumn()
           {
             ColumnID = int.Parse(item["ColumnID"].ToString()),
             DisplayName = item["ColumnDisplayName"].ToString(),
@@ -81,7 +121,32 @@ namespace DemoWebApp
       }
 
       conn.Close();
-      return rv;
+      return new FiltersResultSet() { FilterColumns = rvColumns, FilterOperators = rvOperators };
+    }
+
+    // GET api/<controller>/5
+    [HttpGet("{id}")]
+    public string Get(int id)
+    {
+      return "value";
+    }
+
+    // POST api/<controller>
+    [HttpPost]
+    public void Post([FromBody]string value)
+    {
+    }
+
+    // PUT api/<controller>/5
+    [HttpPut("{id}")]
+    public void Put(int id, [FromBody]string value)
+    {
+    }
+
+    // DELETE api/<controller>/5
+    [HttpDelete("{id}")]
+    public void Delete(int id)
+    {
     }
   }
 }

@@ -15,7 +15,7 @@ Example Usage:
 DECLARE @SQL NVARCHAR(MAX), @TVPParams dbo.UDT_FilterParameters, @TVPOrdering dbo.UDT_ColumnOrder
 
 INSERT INTO @TVPParams
-(ColumnID, OperandID, [Value])
+(ColumnID, OperatorID, [Value])
 VALUES
 (1, 11, N'2'),
 (2, 11, N'RTCMLIVEDB3'),
@@ -111,8 +111,8 @@ SELECT
 	@FilterParamInit = ISNULL(@FilterParamInit, '') + N'
 DECLARE @p' + ParamIndex +
 
-		-- If operand is multi-valued, declare local variable as a temporary table, to ensure strong-typing
-		CASE WHEN FilterPredicates.IsMultiValue = 1 THEN
+		-- If Operator is multi-valued, declare local variable as a temporary table, to ensure strong-typing
+		CASE WHEN FilterOperators.IsMultiValue = 1 THEN
 			N' TABLE ([Value] ' + FilterColumns.ColumnSqlDataType + N');
 			INSERT INTO @p' + ParamIndex + N'
 			SELECT CONVERT(' + FilterColumns.ColumnSqlDataType + N', [value])
@@ -120,18 +120,18 @@ DECLARE @p' + ParamIndex +
 			WHERE ParamIndex = ' + ParamIndex + N';
 			'
 		
-		-- If operand is single-valued, declare the local variable as a regular variable, to ensure strong-typing.
+		-- If Operator is single-valued, declare the local variable as a regular variable, to ensure strong-typing.
 		ELSE
 			N' ' + FilterColumns.ColumnSqlDataType + N';
 			SELECT @p' + ParamIndex + N' = CONVERT(' + FilterColumns.ColumnSqlDataType + N', [value] FROM @TVPParams WHERE ParamIndex = ' + ParamIndex + N';
 			'
 		END
 		,
-	-- Parse the operand template by replacing the placeholders
+	-- Parse the Operator template by replacing the placeholders
 	@FilterString = @FilterString + N'
 	AND ' + REPLACE(
 			REPLACE(
-			FilterPredicates.PredicateTemplate
+			FilterOperators.OperatorTemplate
 			, '{Column}',FilterColumns.ColumnRealName)
 			, '{Parameter}', '@p' + ParamIndex)
 FROM
@@ -139,7 +139,7 @@ FROM
 		SELECT
 			ParamIndex			= CONVERT(nvarchar(max), ParamIndex) COLLATE database_default,
 			FilterColumnID		= ColumnId,
-			FilterPredicateID	= OperandID
+			FilterOperatorID	= OperatorID
 		FROM
 			@TVPParams
 	) AS ParamValues
@@ -148,9 +148,9 @@ JOIN
 ON
 	ParamValues.FilterColumnID = FilterColumns.ColumnID
 JOIN
-	FilterPredicates
+	FilterOperators
 ON
-	ParamValues.FilterPredicateID = FilterPredicates.PredicateID
+	ParamValues.FilterOperatorID = FilterOperators.OperatorID
 INNER JOIN
 	FilterTables
 ON

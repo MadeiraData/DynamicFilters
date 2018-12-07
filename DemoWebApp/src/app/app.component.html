@@ -1,6 +1,21 @@
 <h1>Demo Web App</h1>
 <ul class="list-group">
-  <li class="list-group-item" *ngFor="let fc of apiValues">
-  {{fc.displayName}}
+  <li class="list-group-item" *ngFor='let fc of apiValues.filterColumns'>
+    <div class="input-group">
+      <div class="input-group-append">
+        <span class="input-group-text">{{fc.displayName}}</span>
+      </div>
+      
+      <select *ngIf='fc.supportedFilterOperators[0]!=""' class="select2 form-control">
+        <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name}}</option>
+      </select>
+
+      <input type="text" />
+    </div>
   </li>
 </ul>
+<script>
+  $(".select2").select2({
+    tags: true
+})
+</script>

@@ -40,27 +40,27 @@ VALUES
 GO
 /*
 
-FilterPredicates
+FilterOperators
 -----------------
 
-This table will contain the list of possible predicates and the template for each.
+This table will contain the list of possible Operators and the template for each.
 The templates use "placeholders" such as {Column} and {Parameter} which can later
 be easily replaced with relevant values.
 {Column}		= Placeholder for the column name to be filtered.
 {Parameter}		= Placeholder for the local parameter that contains the filter data.
 
 */
-IF OBJECT_ID('FilterPredicates') IS NOT NULL AND OBJECTPROPERTY(OBJECT_ID('FilterPredicates'), 'IsTable') = 1
-	DROP TABLE FilterPredicates;
+IF OBJECT_ID('FilterOperators') IS NOT NULL AND OBJECTPROPERTY(OBJECT_ID('FilterOperators'), 'IsTable') = 1
+	DROP TABLE FilterOperators;
 GO
-CREATE TABLE FilterPredicates
+CREATE TABLE FilterOperators
 (
-	PredicateID INT PRIMARY KEY,
+	OperatorID INT PRIMARY KEY,
 	IsMultiValue BIT NOT NULL,
-	PredicateName VARCHAR(50) NOT NULL,
-	PredicateTemplate VARCHAR(4000) NOT NULL
+	OperatorName VARCHAR(50) NOT NULL,
+	OperatorTemplate VARCHAR(4000) NOT NULL
 );
-INSERT INTO FilterPredicates
+INSERT INTO FilterOperators
 VALUES
  (1, 0, 'Contains', '{Column} LIKE ''%'' + {Parameter} + ''%''')
 ,(2, 0, 'NotContains', '{Column} NOT LIKE ''%'' + {Parameter} + ''%''')
@@ -86,7 +86,7 @@ Using this table, the GUI can identify columns that can be filtered,
 and later the database back-end will use the same table for parsing.
 
 The field QueryForAvailableValues accepts a database query that must return 3 columns:
- [value] - Will be used for returning the actual value to be used in the predicate template
+ [value] - Will be used for returning the actual value to be used in the Operator template
  [label] - Will be used for displaying the label to the front-end user
  [group] - If not NULL, will be used for grouping the values into option groups
 
@@ -102,13 +102,13 @@ CREATE TABLE FilterColumns
 	ColumnSqlDataType VARCHAR(50) NOT NULL,
 	ColumnDisplayName NVARCHAR(200) NULL,
 	ColumnSortEnabled BIT NOT NULL,
-	ColumnSupportedFilterPredicates VARCHAR(100) NULL,
+	ColumnSupportedFilterOperators VARCHAR(100) NULL,
 	QueryForAvailableValues VARCHAR(4000) NULL
 );
 
 -- Sample data
 INSERT INTO FilterColumns
-(ColumnFilterTableAlias,ColumnRealName,ColumnSqlDataType,ColumnDisplayName,ColumnSortEnabled,ColumnSupportedFilterPredicates,QueryForAvailableValues)
+(ColumnFilterTableAlias,ColumnRealName,ColumnSqlDataType,ColumnDisplayName,ColumnSortEnabled,ColumnSupportedFilterOperators,QueryForAvailableValues)
 VALUES
  ('Members', 'Id', 'int', 'Member Id', 1, NULL, NULL)
 ,('Members', 'Username', 'nvarchar(10)', 'User Name', 1, '1, 2, 3, 4, 9, 10', NULL)
@@ -132,7 +132,7 @@ CREATE TYPE dbo.UDT_FilterParameters AS TABLE
 (
 	ParamIndex int NOT NULL,
 	ColumnID int NOT NULL, 
-	OperandID int NOT NULL,
+	OperatorID int NOT NULL,
 	[Value] nvarchar(max) NOT NULL
 
    -- See SQL Server Books Online for guidelines on determining appropriate bucket count for the index
@@ -169,7 +169,7 @@ Example Usage:
 DECLARE @SQL NVARCHAR(MAX), @TVPParams dbo.UDT_FilterParameters, @TVPOrdering dbo.UDT_ColumnOrder
 
 INSERT INTO @TVPParams
-(ColumnID, OperandID, [Value])
+(ColumnID, OperatorID, [Value])
 VALUES
 (1, 11, N'2'),
 (2, 11, N'RTCMLIVEDB3'),
@@ -265,8 +265,8 @@ SELECT
 	@FilterParamInit = ISNULL(@FilterParamInit, '') + N'
 DECLARE @p' + ParamIndex +
 
-		-- If operand is multi-valued, declare local variable as a temporary table, to ensure strong-typing
-		CASE WHEN FilterPredicates.IsMultiValue = 1 THEN
+		-- If Operator is multi-valued, declare local variable as a temporary table, to ensure strong-typing
+		CASE WHEN FilterOperators.IsMultiValue = 1 THEN
 			N' TABLE ([Value] ' + FilterColumns.ColumnSqlDataType + N');
 			INSERT INTO @p' + ParamIndex + N'
 			SELECT CONVERT(' + FilterColumns.ColumnSqlDataType + N', [value])
@@ -274,18 +274,18 @@ DECLARE @p' + ParamIndex +
 			WHERE ParamIndex = ' + ParamIndex + N';
 			'
 		
-		-- If operand is single-valued, declare the local variable as a regular variable, to ensure strong-typing.
+		-- If Operator is single-valued, declare the local variable as a regular variable, to ensure strong-typing.
 		ELSE
 			N' ' + FilterColumns.ColumnSqlDataType + N';
 			SELECT @p' + ParamIndex + N' = CONVERT(' + FilterColumns.ColumnSqlDataType + N', [value] FROM @TVPParams WHERE ParamIndex = ' + ParamIndex + N';
 			'
 		END
 		,
-	-- Parse the operand template by replacing the placeholders
+	-- Parse the Operator template by replacing the placeholders
 	@FilterString = @FilterString + N'
 	AND ' + REPLACE(
 			REPLACE(
-			FilterPredicates.PredicateTemplate
+			FilterOperators.OperatorTemplate
 			, '{Column}',FilterColumns.ColumnRealName)
 			, '{Parameter}', '@p' + ParamIndex)
 FROM
@@ -293,7 +293,7 @@ FROM
 		SELECT
 			ParamIndex			= CONVERT(nvarchar(max), ParamIndex) COLLATE database_default,
 			FilterColumnID		= ColumnId,
-			FilterPredicateID	= OperandID
+			FilterOperatorID	= OperatorID
 		FROM
 			@TVPParams
 	) AS ParamValues
@@ -302,9 +302,9 @@ JOIN
 ON
 	ParamValues.FilterColumnID = FilterColumns.ColumnID
 JOIN
-	FilterPredicates
+	FilterOperators
 ON
-	ParamValues.FilterPredicateID = FilterPredicates.PredicateID
+	ParamValues.FilterOperatorID = FilterOperators.OperatorID
 INNER JOIN
 	FilterTables
 ON

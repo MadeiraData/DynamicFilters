@@ -40,27 +40,27 @@ VALUES
 GO
 /*
 
-FilterPredicates
+FilterOperators
 -----------------
 
-This table will contain the list of possible predicates and the template for each.
+This table will contain the list of possible Operators and the template for each.
 The templates use "placeholders" such as {Column} and {Parameter} which can later
 be easily replaced with relevant values.
 {Column}		= Placeholder for the column name to be filtered.
 {Parameter}		= Placeholder for the local parameter that contains the filter data.
 
 */
-IF OBJECT_ID('FilterPredicates') IS NOT NULL AND OBJECTPROPERTY(OBJECT_ID('FilterPredicates'), 'IsTable') = 1
-	DROP TABLE FilterPredicates;
+IF OBJECT_ID('FilterOperators') IS NOT NULL AND OBJECTPROPERTY(OBJECT_ID('FilterOperators'), 'IsTable') = 1
+	DROP TABLE FilterOperators;
 GO
-CREATE TABLE FilterPredicates
+CREATE TABLE FilterOperators
 (
-	PredicateID INT PRIMARY KEY,
+	OperatorID INT PRIMARY KEY,
 	IsMultiValue BIT NOT NULL,
-	PredicateName VARCHAR(50) NOT NULL,
-	PredicateTemplate VARCHAR(4000) NOT NULL
+	OperatorName VARCHAR(50) NOT NULL,
+	OperatorTemplate VARCHAR(4000) NOT NULL
 );
-INSERT INTO FilterPredicates
+INSERT INTO FilterOperators
 VALUES
  (1, 0, 'Contains', '{Column} LIKE ''%'' + {Parameter} + ''%''')
 ,(2, 0, 'NotContains', '{Column} NOT LIKE ''%'' + {Parameter} + ''%''')
@@ -86,7 +86,7 @@ Using this table, the GUI can identify columns that can be filtered,
 and later the database back-end will use the same table for parsing.
 
 The field QueryForAvailableValues accepts a database query that must return 3 columns:
- [value] - Will be used for returning the actual value to be used in the predicate template
+ [value] - Will be used for returning the actual value to be used in the Operator template
  [label] - Will be used for displaying the label to the front-end user
  [group] - If not NULL, will be used for grouping the values into option groups
 
@@ -102,13 +102,13 @@ CREATE TABLE FilterColumns
 	ColumnSqlDataType VARCHAR(50) NOT NULL,
 	ColumnDisplayName NVARCHAR(200) NULL,
 	ColumnSortEnabled BIT NOT NULL,
-	ColumnSupportedFilterPredicates VARCHAR(100) NULL,
+	ColumnSupportedFilterOperators VARCHAR(100) NULL,
 	QueryForAvailableValues VARCHAR(4000) NULL
 );
 
 -- Sample data
 INSERT INTO FilterColumns
-(ColumnFilterTableAlias,ColumnRealName,ColumnSqlDataType,ColumnDisplayName,ColumnSortEnabled,ColumnSupportedFilterPredicates,QueryForAvailableValues)
+(ColumnFilterTableAlias,ColumnRealName,ColumnSqlDataType,ColumnDisplayName,ColumnSortEnabled,ColumnSupportedFilterOperators,QueryForAvailableValues)
 VALUES
  ('Members', 'Id', 'int', 'Member Id', 1, NULL, NULL)
 ,('Members', 'Username', 'nvarchar(10)', 'User Name', 1, '1, 2, 3, 4, 9, 10', NULL)
@@ -237,7 +237,7 @@ SELECT
 DECLARE @p' + ParamIndex +
 
 		-- If operand is multi-valued, declare local variable as a temporary table
-		CASE WHEN FilterPredicates.IsMultiValue = 1 THEN
+		CASE WHEN FilterOperators.IsMultiValue = 1 THEN
 			N' TABLE ([Value] ' + FilterColumns.ColumnSqlDataType + N');
 			INSERT INTO @p' + ParamIndex + N'
 			SELECT CONVERT(' + FilterColumns.ColumnSqlDataType + N', b.[value])
@@ -256,7 +256,7 @@ DECLARE @p' + ParamIndex +
 	@FilterString = @FilterString + N'
 	AND ' + REPLACE(
 			REPLACE(
-			FilterPredicates.PredicateTemplate
+			FilterOperators.OperatorTemplate
 			, '{Column}',FilterColumns.ColumnRealName)
 			, '{Parameter}', '@p' + ParamIndex)
 FROM
@@ -265,7 +265,7 @@ FROM
 		SELECT
 			ParamIndex			= CONVERT(nvarchar(max), [key]) COLLATE database_default,
 			FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.columnId')),
-			FilterPredicateID	= CONVERT(int, JSON_VALUE([value], '$.operatorId'))
+			FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.operatorId'))
 		FROM
 			OPENJSON(@JsonParams, '$.Parameters')
 	) AS ParamValues
@@ -274,9 +274,9 @@ JOIN
 ON
 	ParamValues.FilterColumnID = FilterColumns.ColumnID
 JOIN
-	FilterPredicates
+	FilterOperators
 ON
-	ParamValues.FilterPredicateID = FilterPredicates.PredicateID
+	ParamValues.FilterOperatorID = FilterOperators.OperatorID
 INNER JOIN
 	FilterTables
 ON

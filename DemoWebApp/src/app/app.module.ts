@@ -6,9 +6,12 @@ import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
+import { filterSupportedOperators } from './app.filter.operatorsFilter';
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    filterSupportedOperators
   ],
   imports: [
     BrowserModule,
