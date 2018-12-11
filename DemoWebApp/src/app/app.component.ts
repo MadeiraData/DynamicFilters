@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Http } from '@angular/http'
 
 @Component({
@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
   listColumns: any[];
   listOperators: any[];
   stagingFilter: { columnID: any, operatorID: any, value: any[] };
+  @ViewChild('so') stagingOperator: ElementRef;
   ngOnInit() {
     this._httpService.get('/api/values').subscribe(values => {
       this.apiValues = values.json();
@@ -48,11 +49,19 @@ export class AppComponent implements OnInit {
   onChangeStagingColumn(newID) {
     this.stagingFilter.columnID = newID;
     console.log("selected new column: " + newID);
+    if (this.stagingOperator != undefined)
+    {
+      this.stagingOperator.nativeElement.selectedIndex = 0;
+      //console.log(this.stagingOperator);
+      //console.log("index: " + this.stagingOperator.nativeElement.selectedIndex);
+      //console.log("value: " + this.stagingOperator.nativeElement.value);
+      this.stagingFilter.operatorID = this.stagingOperator.nativeElement.value;
+    }
   }
   onChangeStagingOperator(newID) {
     this.stagingFilter.operatorID = newID;
     console.log("selected new operator: " + newID);
-    if (!this.apiValues.filterOperators[newID].isMultiValue)
+    if (this.apiValues.filterOperators[newID] != undefined && !this.apiValues.filterOperators[newID].isMultiValue)
       this.stagingFilter.value.push("");
     else
       this.stagingFilter.value = [];

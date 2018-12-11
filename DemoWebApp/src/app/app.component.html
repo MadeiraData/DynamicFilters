@@ -22,29 +22,36 @@
     </select>
 
     <select class="form-control" #so (change)="onChangeStagingOperator(so.value)" *ngIf="stagingFilter.columnID!==''&&stagingFilter.columnID!=='-1'">
+      <option [value]="-1" [selected]="stagingFilter.operatorID==''||stagingFilter.operatorID=='-1'?true:false">Condition type...</option>
       <option *ngFor="let op of apiValues.filterColumns[stagingFilter.columnID].supportedFilterOperators; index as i" [value]="op" [selected]="stagingFilter.operatorID==op?true:false">{{apiValues.filterOperators[op].name}}</option>
     </select>
 
-    <!--<input class="form-control" #sv1 *ngIf="this.apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false" (ngModel)="stagingFilter.value[0]" />-->
+    <input class="form-control" #sv1 *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false" [(ngModel)]="stagingFilter.value[0]" />
+
   </div>
 </div>
+<br />
+Operator ID: {{stagingFilter.operatorID }}<br />
+<div *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
+  Is Multi value: {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
+  Value: {{ stagingFilter.value[0] }}
+</div>
+<!--
+<ul class="list-group">
+  <li class="list-group-item" *ngFor='let fc of apiValues.filterColumns'>
+    <div class="input-group" *ngIf='fc.supportedFilterOperators[0]!=""'>
 
-  <!--
-  <ul class="list-group">
-    <li class="list-group-item" *ngFor='let fc of apiValues.filterColumns'>
-      <div class="input-group" *ngIf='fc.supportedFilterOperators[0]!=""'>
+      <select class="select2 form-control">
+        <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name}}</option>
+      </select>
 
-        <select class="select2 form-control">
-          <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name}}</option>
-        </select>
-
-        <input type="text" />
-      </div>
-    </li>
-  </ul>
-  <script>
-      $(".select2").select2({
-        tags: true
-      })
-  </script>
-  -->
+      <input type="text" />
+    </div>
+  </li>
+</ul>
+<script>
+    $(".select2").select2({
+      tags: true
+    })
+</script>
+-->
