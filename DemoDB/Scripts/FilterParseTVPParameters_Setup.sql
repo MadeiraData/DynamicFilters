@@ -277,7 +277,7 @@ DECLARE @p' + ParamIndex +
 		-- If Operator is single-valued, declare the local variable as a regular variable, to ensure strong-typing.
 		ELSE
 			N' ' + FilterColumns.ColumnSqlDataType + N';
-			SELECT @p' + ParamIndex + N' = CONVERT(' + FilterColumns.ColumnSqlDataType + N', [value] FROM @TVPParams WHERE ParamIndex = ' + ParamIndex + N';
+			SELECT @p' + ParamIndex + N' = CONVERT(' + FilterColumns.ColumnSqlDataType + N', [value]) FROM @TVPParams WHERE ParamIndex = ' + ParamIndex + N';
 			'
 		END
 		,
@@ -290,7 +290,7 @@ DECLARE @p' + ParamIndex +
 			, '{Parameter}', '@p' + ParamIndex)
 FROM
 	(
-		SELECT
+		SELECT DISTINCT
 			ParamIndex			= CONVERT(nvarchar(max), ParamIndex) COLLATE database_default,
 			FilterColumnID		= ColumnId,
 			FilterOperatorID	= OperatorID

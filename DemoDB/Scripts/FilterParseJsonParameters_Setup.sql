@@ -148,9 +148,9 @@ Example Usage:
 --------------------------------
 DECLARE @SQL NVARCHAR(MAX), @JsonParams NVARCHAR(MAX) = N'{ "Parameters": 
 [
-	{"columnId": "1", "operatorId": "11", "Value": [ "2" ]},
-	{"columnId": "2", "operatorId": "11", "Value": [ "RTCMLIVEDB3", "TheOptionLiveDB" ] },
-	{"columnId": "3", "operatorId": "6", "Value": "2018-11-11 15:00"}
+	{"ColumnID": "1", "OperatorID": "11", "Value": [ "2" ]},
+	{"ColumnID": "2", "OperatorID": "11", "Value": [ "RTCMLIVEDB3", "TheOptionLiveDB" ] },
+	{"ColumnID": "3", "OperatorID": "6", "Value": "2018-11-11 15:00"}
 ]
 }', @JsonOrdering NVARCHAR(MAX) = N'{ "OrderingColumns": 
 [
@@ -262,10 +262,10 @@ DECLARE @p' + ParamIndex +
 FROM
 	(
 		-- This parses the XML into a relational structure
-		SELECT
+		SELECT DISTINCT
 			ParamIndex			= CONVERT(nvarchar(max), [key]) COLLATE database_default,
-			FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.columnId')),
-			FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.operatorId'))
+			FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.ColumnID')),
+			FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.CperatorID'))
 		FROM
 			OPENJSON(@JsonParams, '$.Parameters')
 	) AS ParamValues

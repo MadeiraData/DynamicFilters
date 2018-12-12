@@ -14,9 +14,9 @@ Example Usage:
 --------------------------------
 DECLARE @SQL NVARCHAR(MAX), @JsonParams NVARCHAR(MAX) = N'{ "Parameters": 
 [
-	{"columnId": "1", "operatorId": "11", "Value": [ "2" ]},
-	{"columnId": "2", "operatorId": "11", "Value": [ "RTCMLIVEDB3", "TheOptionLiveDB" ] },
-	{"columnId": "3", "operatorId": "6", "Value": "2018-11-11 15:00"}
+	{"ColumnID": "1", "OperatorID": "11", "Value": [ "2" ]},
+	{"ColumnID": "2", "OperatorID": "11", "Value": [ "RTCMLIVEDB3", "TheOptionLiveDB" ] },
+	{"ColumnID": "3", "OperatorID": "6", "Value": "2018-11-11 15:00"}
 ]
 }', @JsonOrdering NVARCHAR(MAX) = N'{ "OrderingColumns": 
 [
@@ -59,8 +59,8 @@ FROM
 INSERT INTO @TVPParams
 SELECT
 	ParamIndex			= [key],
-	FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.ColumnId')),
-	FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.OperatorId')),
+	FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.ColumnID')),
+	FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.OperatorID')),
 	Val					= JSON_VALUE([value], '$.Value')
 FROM
 	OPENJSON(@JsonParams, '$.Parameters')
