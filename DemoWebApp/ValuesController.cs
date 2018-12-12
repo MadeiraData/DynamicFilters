@@ -127,7 +127,7 @@ namespace DemoWebApp
       rvFilters.Add(new FilterParameterSet() { ColumnID = 4, OperatorID = 1, Value = new string[] { "on" } });
       rvFilters.Add(new FilterParameterSet() { ColumnID = 4, OperatorID = 4, Value = new string[] { "d" } });
       rvFilters.Add(new FilterParameterSet() { ColumnID = 3, OperatorID = 3, Value = new string[] { "Br" } });
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 6, OperatorID = 11, Value = new string[] { "2", "4" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 6, OperatorID = 11, Value = new string[] { "1" } });
       rvFilters.Add(new FilterParameterSet() { ColumnID = 7, OperatorID = 9, Value = new string[] { "1" } });
       rvFilters.Add(new FilterParameterSet() { ColumnID = 8, OperatorID = 9, Value = new string[] { "2" } });
       rvFilters.Add(new FilterParameterSet() { ColumnID = 10, OperatorID = 5, Value = new string[] { "2017-01-01" } });

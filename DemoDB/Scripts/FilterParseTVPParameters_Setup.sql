@@ -114,10 +114,9 @@ VALUES
 ,('Members', 'Username', 'nvarchar(10)', 'User Name', 1, '1, 2, 3, 4, 9, 10', NULL)
 ,('Members', 'FirstName', 'nvarchar(20)', 'First Name', 1, '1, 2, 3, 4, 9, 10, 11, 12', NULL)
 ,('Members', 'LastName', 'nvarchar(20)', 'Last Name', 1, '1, 2, 3, 4, 9, 10, 11, 12', NULL)
-,('Members', 'SampleID', 'int', 'Sample ID', 1, '9', NULL)
-,('Members', 'CountryId', 'tinyint', 'Country', 1, '11', 'SELECT Id AS [value], Name AS [label], NULL AS [group] FROM Lists.Countries ORDER BY 2')
-,('Members', 'GenderID', 'tinyint', 'Gender', 1, '11', 'SELECT Id AS [value], Name AS [label], NULL AS [group] FROM Lists.Genders ORDER BY 2')
-,('Members', 'SexualPreferenceId', 'tinyint', 'Sexual Preference', 1, '11', 'SELECT Id AS [value], Name AS [label], NULL AS [group] FROM Lists.Genders ORDER BY 2')
+,('Members', 'CountryId', 'tinyint', 'Country', 1, '9,10,11,12', 'SELECT Id AS [value], Name AS [label], NULL AS [group] FROM Lists.Countries ORDER BY 2')
+,('Members', 'GenderID', 'tinyint', 'Gender', 1, '9,10,11', 'SELECT Id AS [value], Name AS [label], NULL AS [group] FROM Lists.Genders ORDER BY 2')
+,('Members', 'SexualPreferenceId', 'tinyint', 'Sexual Preference', 1, '9,10,11', 'SELECT Id AS [value], Name AS [label], NULL AS [group] FROM Lists.Genders ORDER BY 2')
 ,('Members', 'BirthDate', 'date', 'BirthDate', 1, '5, 6, 7, 8, 9, 10', NULL)
 ,('Members', 'RegistrationDateTime', 'datetime', 'Registration Date and Time', 1, '5, 6, 7, 8, 9, 10', NULL)
 
