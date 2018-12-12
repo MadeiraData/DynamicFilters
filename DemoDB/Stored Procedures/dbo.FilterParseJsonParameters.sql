@@ -59,8 +59,9 @@ FROM
 INSERT INTO @TVPParams
 SELECT
 	ParamIndex			= [key],
-	FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.columnId')),
-	FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.operatorId'))
+	FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.ColumnId')),
+	FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.OperatorId')),
+	Val					= JSON_VALUE([value], '$.Value')
 FROM
 	OPENJSON(@JsonParams, '$.Parameters')
 

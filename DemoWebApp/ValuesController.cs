@@ -7,6 +7,7 @@ using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Data.Common;
 using System.Data;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,7 +31,7 @@ namespace DemoWebApp
 
   public struct FilterOperator
   {
-    public string OperatorID { get; set; }
+    public int OperatorID { get; set; }
     public bool isMultiValue { get; set; }
     public string Name { get; set; }
   }
@@ -44,8 +45,8 @@ namespace DemoWebApp
 
   public struct FiltersResultSet
   {
-    public Dictionary<string, FilterColumn> FilterColumns { get; set; }
-    public Dictionary<string, FilterOperator> FilterOperators { get; set; }
+    public Dictionary<int, FilterColumn> FilterColumns { get; set; }
+    public Dictionary<int, FilterOperator> FilterOperators { get; set; }
     public List<FilterParameterSet> SavedFilterSet { get; set; }
   }
 
@@ -55,8 +56,8 @@ namespace DemoWebApp
     [HttpGet]
     public FiltersResultSet Get()
     {
-      Dictionary<string, FilterColumn> rvColumns = new Dictionary<string, FilterColumn>();
-      Dictionary<string, FilterOperator> rvOperators = new Dictionary<string, FilterOperator>();
+      Dictionary<int, FilterColumn> rvColumns = new Dictionary<int, FilterColumn>();
+      Dictionary<int, FilterOperator> rvOperators = new Dictionary<int, FilterOperator>();
       List<FilterParameterSet> rvFilters = new List<FilterParameterSet>();
       SqlConnection conn = new SqlConnection("Server=.;Database=DemoDB;Trusted_Connection=True;");
       conn.Open();
@@ -69,10 +70,10 @@ namespace DemoWebApp
 
         foreach (DataRow item in ds.Tables[0].Rows)
         {
-          rvOperators.Add(item["OperatorID"].ToString(), new FilterOperator()
+          rvOperators.Add(int.Parse(item["OperatorID"].ToString()), new FilterOperator()
           {
             isMultiValue = bool.Parse(item["IsMultiValue"].ToString()),
-            OperatorID = item["OperatorID"].ToString(),
+            OperatorID = int.Parse(item["OperatorID"].ToString()),
             Name = item["OperatorName"].ToString()
           });
         }
@@ -109,7 +110,7 @@ namespace DemoWebApp
             }
           }
 
-          rvColumns.Add(item["ColumnID"].ToString(), new FilterColumn()
+          rvColumns.Add(int.Parse(item["ColumnID"].ToString()), new FilterColumn()
           {
             ColumnID = int.Parse(item["ColumnID"].ToString()),
             DisplayName = item["ColumnDisplayName"].ToString(),
@@ -143,8 +144,31 @@ namespace DemoWebApp
 
     // POST api/<controller>
     [HttpPost]
-    public void Post([FromBody]string value)
+    public JsonResult Post([FromBody]List<FilterParameterSet> value)
     {
+      JsonResult rv = Json(value);
+
+      SqlConnection conn = new SqlConnection("Server=.;Database=DemoDB;Trusted_Connection=True;");
+      conn.Open();
+
+      using (SqlCommand cmd = new SqlCommand("dbo.FilterParseJsonParameters", conn))
+      {
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("SourceTableAlias", "Members");
+        cmd.Parameters.AddWithValue("JsonParams", JsonConvert.SerializeObject(Json(value).Value));
+        //cmd.Parameters.AddWithValue("JsonOrdering", @"{ 'OrderingColumns': [{'columnId': 11, 'isAscending': 1},{ 'columnId': 5, 'isAscending': 1}] }");
+        cmd.Parameters.Add(new SqlParameter("ParsedSQL", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output });
+
+        DataSet ds = new DataSet();
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        da.Fill(ds);
+
+        rv = Json(ds);
+      }
+
+      conn.Close();
+
+      return rv;
     }
 
     // PUT api/<controller>/5

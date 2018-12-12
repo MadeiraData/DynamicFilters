@@ -12,30 +12,54 @@
       <button class="btn btn-outline-secondary" type="button" (click)="removeFilter(i)" title="Remove">&times;</button>
     </div>
   </div>
+  <div class="input-group">
+    <button type="button" class="btn btn-success" (click)="submitFilter()">Submit</button>
+  </div>
 </div>
 
 <div class="form-group">
   <div class="input-group">
-    <select class="form-control" #sc (change)="onChangeStagingColumn(sc.value)">
-      <option [value]="-1" [selected]="stagingFilter.columnID==''||stagingFilter.columnID=='-1'?true:false">Add condition on...</option>
-      <option *ngFor="let c of listColumns; index as i" [value]="c" [selected]="stagingFilter.columnID==c?true:false">{{apiValues.filterColumns[c].displayName}}</option>
+    <select class="form-control" [(ngModel)]="stagingFilter.columnID" (change)="onChangeStagingColumn()">
+      <option [ngValue]="-1" selected="selected">Add condition on...</option>
+      <option *ngFor="let c of listColumns; index as i" [ngValue]="c">{{apiValues.filterColumns[c].displayName}}</option>
     </select>
 
-    <select class="form-control" #so (change)="onChangeStagingOperator(so.value)" *ngIf="stagingFilter.columnID!==''&&stagingFilter.columnID!=='-1'">
-      <option [value]="-1" [selected]="stagingFilter.operatorID==''||stagingFilter.operatorID=='-1'?true:false">Condition type...</option>
-      <option *ngFor="let op of apiValues.filterColumns[stagingFilter.columnID].supportedFilterOperators; index as i" [value]="op" [selected]="stagingFilter.operatorID==op?true:false">{{apiValues.filterOperators[op].name}}</option>
+    <select class="form-control" (change)="onChangeStagingOperator()" *ngIf="stagingFilter.columnID!==''&&stagingFilter.columnID!==-1" [(ngModel)]="stagingFilter.operatorID">
+      <option *ngFor="let op of apiValues.filterColumns[stagingFilter.columnID].supportedFilterOperators; index as i" [ngValue]="op">{{apiValues.filterOperators[op].name}}</option>
     </select>
 
-    <input class="form-control" #sv1 *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false" [(ngModel)]="stagingFilter.value[0]" />
+    <input class="form-control" *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length == 0" [(ngModel)]="stagingFilter.value[0]" />
+
+    <select class="form-control" *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0" [(ngModel)]="stagingFilter.value[0]">
+      <option *ngFor="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues; index as i" [ngValue]="v.value">{{v.label}}</option>
+    </select>
+
+    <select class="form-control" *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==true && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0" multiple="multiple" [(ngModel)]="stagingFilter.value">
+      <option *ngFor="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues; index as i" [ngValue]="v.value">{{v.label}}</option>
+    </select>
+
+    <button #submitbtn type="button" class="btn btn-outline-primary" *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterColumns[stagingFilter.columnID] != undefined && stagingFilter.value[0] != undefined" (click)="AddFilter()">+</button>
+  </div>
+  <div>
 
   </div>
 </div>
+<div *ngIf="isLoading">Loading...</div>
+
 <br />
-Operator ID: {{stagingFilter.operatorID }}<br />
-<div *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
-  Is Multi value: {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
-  Value: {{ stagingFilter.value[0] }}
-</div>
+<fieldset>
+  <legend>Debug:</legend>
+  <div>Operator ID: {{stagingFilter.operatorID }}</div>
+  <div *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
+    Is Multi value: {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
+    Available Values: <span *ngFor="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues">{{v.value}};</span><br />
+    Values: <span *ngFor="let v of stagingFilter.value">{{v}};</span><br />
+  </div>
+  <div>Filter Body:</div>
+  <pre style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(apiValues.savedFilterSet)}}</pre>
+  <div>Response Body:</div>
+  <pre style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(httpResponse)}}</pre>
+</fieldset>
 <!--
 <ul class="list-group">
   <li class="list-group-item" *ngFor='let fc of apiValues.filterColumns'>
@@ -45,13 +69,14 @@ Operator ID: {{stagingFilter.operatorID }}<br />
         <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name}}</option>
       </select>
 
-      <input type="text" />
+  <input type="text" />
+
     </div>
   </li>
 </ul>
 <script>
-    $(".select2").select2({
-      tags: true
-    })
+  $(".select2").select2({
+    tags: true
+  })
 </script>
 -->
