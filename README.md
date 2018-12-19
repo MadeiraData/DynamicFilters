@@ -26,7 +26,12 @@ The demo web app was built based on the following tutorial: https://medium.com/@
 1. Start by forking or cloning the repository to your computer, and opening the FilterParseSearchParameters solution in Visual Studio.
 2. Open the DemoDB database project, and **publish** it to your local SQL Server instance.
 3. Open a command line with Administrator permissions and nagivate to the DemoWebApp folder.
-4. Run the following command in the command line (to install all dependencies): `npm install`
-5. Navigate to the DemoWebApp folder, right click on the `run_core_server.bat` executable and **Run it as Administrator**.
-6. Similarly, right click on the `run_angular_app.bat` executable and **Run it as Administrator**.
-7. The web app should now be available at http://localhost:4200
+4. Run the following commands in the command line (to install all angular dependencies and build the app):
+```
+npm install
+ng build
+```
+5. Navigate to the DemoWebApp folder, edit the `run_core_server.bat` and `run_angular_app.bat` executables, and change the hard-coded paths within as needed, to point to the right path of DemoWebApp folder.
+6. Right click on the `run_core_server.bat` executable and **Run it as Administrator**.
+7. Similarly, right click on the `run_angular_app.bat` executable and **Run it as Administrator**.
+8. The web app should now be available at http://localhost:4200
