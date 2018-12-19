@@ -16,10 +16,10 @@ The demo web app was built based on the following tutorial: https://medium.com/@
 
 ## Prerequisites
 
-- Node.js Installed
-- .NET Core Installed
-- Microsoft SQL Server 2016 version or newer
-- Microsoft Visual Studio 2017 Community
+- [Node.js Installed](https://nodejs.org/en/download/)
+- [.NET Core Installed](https://www.microsoft.com/net/core#windowscmd)
+- [Microsoft SQL Server 2016 version or newer](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+- [Microsoft Visual Studio 2017 Community](https://www.visualstudio.com/downloads/)
 
 ## Installation & Setup
 
