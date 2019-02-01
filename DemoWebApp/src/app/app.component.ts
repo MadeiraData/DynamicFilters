@@ -17,9 +17,11 @@ export class AppComponent implements OnInit {
   httpResponse: string;
   stagingFilter: { columnID: number, operatorID: number, value: any[] };
   isLoading: boolean;
+  currResponseTab: string;
   @ViewChild('submitbtn') submitBtn: ElementRef;
   ngOnInit() {
     this.isLoading = true;
+    this.currResponseTab = "debug";
     this._httpService.get('/api/values').subscribe(values => {
       this.apiValues = values.json();
       this.isLoading = false;
@@ -44,6 +46,28 @@ export class AppComponent implements OnInit {
 
       console.log(this.listOperators);
     });
+  }
+
+  changeResponseTab(newtab: string) {
+    this.currResponseTab = newtab;
+  }
+
+  isCurrentTab(mytab: string) {
+    return (mytab == this.currResponseTab);
+  }
+
+  getActiveClassForTab(mytab: string) {
+    if (mytab == this.currResponseTab)
+      return "active";
+    else
+      return "";
+  }
+
+  getActiveClassForTabContent(mytab: string) {
+    if (mytab == this.currResponseTab)
+      return "show active";
+    else
+      return "";
   }
 
   removeFilter(filterIndex: any) {
@@ -83,6 +107,7 @@ export class AppComponent implements OnInit {
       console.log(values);
       this.httpResponse = values.json();
       this.isLoading = false;
+      this.currResponseTab = "table";
     });
   }
 }

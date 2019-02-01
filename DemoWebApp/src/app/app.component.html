@@ -1,7 +1,7 @@
 <h1>Demo Web App</h1>
 
 
-<div class="form-group">
+<div class="form-group" *ngIf="apiValues != undefined">
   <div class="input-group" *ngFor="let f of apiValues.savedFilterSet; index as i">
     <div class="input-group-prepend">
       <span class="input-group-text"><strong>{{apiValues.filterColumns[f.columnID].displayName}}</strong></span>
@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group" *ngIf="stagingFilter != undefined">
   <div class="input-group">
     <select class="form-control" [(ngModel)]="stagingFilter.columnID" (change)="onChangeStagingColumn()">
       <option [ngValue]="-1" selected="selected">Add condition on...</option>
@@ -44,39 +44,81 @@
 
   </div>
 </div>
-<div *ngIf="isLoading">Loading...</div>
+<img src="assets/spinner.gif" title="Loading..." *ngIf="isLoading"/>
 
 <br />
-<fieldset>
-  <legend>Debug:</legend>
-  <div>Operator ID: {{stagingFilter.operatorID }}</div>
-  <div *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
-    Is Multi value: {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
-    Available Values: <span *ngFor="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues">{{v.value}};</span><br />
-    Values: <span *ngFor="let v of stagingFilter.value">{{v}};</span><br />
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link {{getActiveClassForTab('debug')}}" id="tab3" data-toggle="tab" href="#tab3c" (click)="changeResponseTab('debug')" role="tab" aria-controls="tab3">Input Debug</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{getActiveClassForTab('table')}}" id="tab1" data-toggle="tab" href="#tab1c" (click)="changeResponseTab('table')" role="tab" aria-controls="tab1">Table Response</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{getActiveClassForTab('json')}}" id="tab2" data-toggle="tab" href="#tab2c" (click)="changeResponseTab('json')" role="tab" aria-controls="tab2">JSON Response</a>
+  </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade {{getActiveClassForTabContent('debug')}}" id="tab3c" role="tabpanel" aria-labelledby="tab3">
+    <fieldset *ngIf="apiValues != undefined">
+      <div *ngIf="stagingFilter != undefined"><b>Operator ID:</b> {{stagingFilter.operatorID }}</div>
+      <div *ngIf="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
+        <b>Is Multi value:</b> {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
+        <b>Available Values:</b> <span *ngFor="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues">{{v.value}};</span><br />
+        <b>Values:</b> <span *ngFor="let v of stagingFilter.value">{{v}};</span><br />
+      </div>
+      <div><b>Filter Body:</b></div>
+      <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(apiValues.savedFilterSet)}}</pre>
+    </fieldset>
   </div>
-  <div>Filter Body:</div>
-  <pre style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(apiValues.savedFilterSet)}}</pre>
-  <div>Response Body:</div>
-  <pre style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(httpResponse)}}</pre>
-</fieldset>
+  <div class="tab-pane fade {{getActiveClassForTabContent('table')}}" id="tab1c" role="tabpanel" aria-labelledby="tab1">
+    <table class="table table-hover table-bordered table-striped" *ngIf="httpResponse != undefined">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">ID</th>
+          <th scope="col">Username</th>
+          <th scope="col">Full Name</th>
+          <th scope="col">Reg. Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of httpResponse.table; index as i" title="{{printJson(row)}}">
+          <th scope="row">{{row.rowNumber}}</th>
+          <td>{{row.id}}</td>
+          <td>{{row.username}}</td>
+          <td>{{row.firstName}} {{row.lastName}}</td>
+          <td>{{row.registrationDateTime}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tab-pane fade {{getActiveClassForTabContent('json')}}" id="tab2c" role="tabpanel" aria-labelledby="tab2">
+    <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(httpResponse)}}</pre>
+  </div>
+</div>
+
+
+
 <!--
 <ul class="list-group">
   <li class="list-group-item" *ngFor='let fc of apiValues.filterColumns'>
     <div class="input-group" *ngIf='fc.supportedFilterOperators[0]!=""'>
-
       <select class="select2 form-control">
-        <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name}}</option>
-      </select>
+        <option *ngFor="let pr of apiValues.filterOperators | filterSupportedOperators:fc.supportedFilterOperators" value="pr.OperatorID">{{pr.name
+        }}</option>
+        </select>
 
-  <input type="text" />
+        <input type="text" />
 
-    </div>
-  </li>
-</ul>
-<script>
-  $(".select2").select2({
-    tags: true
-  })
-</script>
--->
+        </div>
+        </li>
+        </ul>
+        <script>
+          $(".select2").select2({
+            tags: true
+          })
+        </script>
+        -->
