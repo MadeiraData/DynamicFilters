@@ -220,4 +220,7 @@
     <None Include="Scripts\FilterParseJsonParameters_Setup.sql" />
     <None Include="Scripts\FilterParseTVPParameters_Setup.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
+  </ItemGroup>
 </Project>
