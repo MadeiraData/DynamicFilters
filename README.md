@@ -1,4 +1,4 @@
-# FilterParseSearchParameters
+# Dynamic Filters (i.e. FilterParseSearchParameters)
 
 This repository includes an example front-end website, and a back-end database, for demonstrating fully-dynamic filtering capabilities (column, operator, value). Fully protected from SQL Injection.
 
