@@ -1,4 +1,4 @@
-# FilterParseSearchParameters
+# Dynamic Filters (i.e. FilterParseSearchParameters)
 
 This repository includes an example front-end website, and a back-end database, for demonstrating fully-dynamic filtering capabilities (column, operator, value). Fully protected from SQL Injection.
 
@@ -20,6 +20,7 @@ The demo web app was built based on the following tutorial: https://medium.com/@
 - [.NET Core Installed](https://www.microsoft.com/net/core#windowscmd)
 - [Microsoft SQL Server 2016 version or newer](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 - [Microsoft Visual Studio 2017 Community](https://www.visualstudio.com/downloads/)
+- [SQL Server Data Tools (SSDT) for Visual Studio](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt)
 
 ## Installation & Setup
 
