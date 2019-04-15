@@ -25,7 +25,9 @@ The demo web app was built based on the following tutorial: https://medium.com/@
 ## Installation & Setup
 
 1. Start by forking or cloning the repository to your computer, and opening the FilterParseSearchParameters solution in Visual Studio.
-2. Open the DemoDB database project, and **publish** it to your local SQL Server instance.
+2. Creating the Database: Do one of the following:
+    - Open the DemoDB database project, and **publish** it to your local SQL Server instance. Or:
+    - Open the "DemoDB Setup with data.sql" script file and run it in your local SQL Server instance (this will also generate data).
 3. Open a command line with Administrator permissions and nagivate to the DemoWebApp folder.
 4. Run the following commands in the command line (to install all angular dependencies and build the app):
 ```
