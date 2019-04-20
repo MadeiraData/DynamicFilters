@@ -1,3 +1,3 @@
-cd "C:\Users\user\Source\Repos\FilterParseSearchParameters\DemoWebApp"
+cd "%~dp0"
 dotnet watch run
 pause

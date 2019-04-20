@@ -14,10 +14,12 @@
     [MaritalStatusId]      TINYINT         NULL,
     [Picture]              VARBINARY (MAX) NULL,
     [RegistrationDateTime] DATETIME2 (0)   NOT NULL,
+    [ReferringMemberId] INT NULL, 
     CONSTRAINT [pk_Members_c_Id] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [fk_Members_CountryId_Countries_Id] FOREIGN KEY ([CountryId]) REFERENCES [Lists].[Countries] ([Id]),
     CONSTRAINT [fk_Members_GenderId_Genders_Id] FOREIGN KEY ([GenderId]) REFERENCES [Lists].[Genders] ([Id]),
     CONSTRAINT [fk_Members_MaritalStatusId_MaritalStatuses_Id] FOREIGN KEY ([MaritalStatusId]) REFERENCES [Lists].[MaritalStatuses] ([Id]),
-    CONSTRAINT [fk_Members_SexualPreferenceId_Genders_Id] FOREIGN KEY ([SexualPreferenceId]) REFERENCES [Lists].[Genders] ([Id])
+    CONSTRAINT [fk_Members_SexualPreferenceId_Genders_Id] FOREIGN KEY ([SexualPreferenceId]) REFERENCES [Lists].[Genders] ([Id]),
+    CONSTRAINT [fk_Members_ReferringMemberId_Members_Id] FOREIGN KEY ([ReferringMemberId]) REFERENCES [Operation].[Members] ([Id])
 );
 
