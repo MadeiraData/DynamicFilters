@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <!-- Google Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" />
+  <!-- JQuery 3 -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <!-- Angular -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.2/angular.min.js" integrity="sha256-ruP2+uorUblSeg7Tozk75u8TaSUKRCZVvNV0zRGxkRQ=" crossorigin="anonymous"></script>
+
+  <style>
+    /* Sticky footer styles
+    -------------------------------------------------- */
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+
+    body {
+      /* Margin bottom by footer height */
+      margin-bottom: 60px;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+      height: 60px;
+      line-height: 60px; /* Vertically center the text there */
+      background-color: #f5f5f5;
+    }
+  </style>
+</head>
+<body ng-app="demoApp" ng-controller="demoAppCtrl">
+  <h1>Demo Web App</h1>
+
+
+  <div class="form-group" ng-show="apiValues != undefined">
+    <div class="input-group" ng-repeat="let f of apiValues.savedFilterSet; index as i">
+      <div class="input-group-prepend">
+        <span class="input-group-text"><strong>{{apiValues.filterColumns[f.columnID].displayName}}</strong></span>
+      </div>
+      <span class="input-group-text">{{apiValues.filterOperators[f.operatorID].name}}:</span>
+      <span class="form-control">{{f.value}}</span>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" (click)="removeFilter(i)" title="Remove">&times;</button>
+      </div>
+    </div>
+    <div class="input-group">
+      <button type="button" class="btn btn-success" (click)="submitFilter()">Submit</button>
+    </div>
+  </div>
+
+  <div class="form-group" ng-show="stagingFilter != undefined">
+    <div class="input-group">
+      <select class="form-control" [(ngModel)]="stagingFilter.columnID" (change)="onChangeStagingColumn()">
+        <option [ngValue]="-1" selected="selected">Add condition on...</option>
+        <option ng-repeat="let c of listColumns; index as i" [ngValue]="c">{{apiValues.filterColumns[c].displayName}}</option>
+      </select>
+
+      <select class="form-control" (change)="onChangeStagingOperator()" ng-show="stagingFilter.columnID!==''&&stagingFilter.columnID!==-1" [(ngModel)]="stagingFilter.operatorID">
+        <option ng-repeat="let op of apiValues.filterColumns[stagingFilter.columnID].supportedFilterOperators; index as i" [ngValue]="op">{{apiValues.filterOperators[op].name}}</option>
+      </select>
+
+      <input class="form-control" ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length == 0" [(ngModel)]="stagingFilter.value[0]" />
+
+      <select class="form-control" ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0" [(ngModel)]="stagingFilter.value[0]">
+        <option ng-repeat="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues; index as i" [ngValue]="v.value">{{v.label}}</option>
+      </select>
+
+      <select class="form-control" ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==true && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0" multiple="multiple" [(ngModel)]="stagingFilter.value">
+        <option ng-repeat="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues; index as i" [ngValue]="v.value">{{v.label}}</option>
+      </select>
+
+      <button id="submitbtn" type="button" class="btn btn-outline-primary" ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterColumns[stagingFilter.columnID] != undefined && stagingFilter.value[0] != undefined" (click)="AddFilter()">+</button>
+    </div>
+    <div>
+
+    </div>
+  </div>
+  <img src="assets/spinner.gif" title="Loading..." ng-show="isLoading" />
+
+  <br />
+
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link {{getActiveClassForTab('debug')}}" id="tab3" data-toggle="tab" href="#tab3c" (click)="changeResponseTab('debug')" role="tab" aria-controls="tab3">Input Debug</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{getActiveClassForTab('table')}}" id="tab1" data-toggle="tab" href="#tab1c" (click)="changeResponseTab('table')" role="tab" aria-controls="tab1">Table Response</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{getActiveClassForTab('json')}}" id="tab2" data-toggle="tab" href="#tab2c" (click)="changeResponseTab('json')" role="tab" aria-controls="tab2">JSON Response</a>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade {{getActiveClassForTabContent('debug')}}" id="tab3c" role="tabpanel" aria-labelledby="tab3">
+      <fieldset ng-show="apiValues != undefined">
+        <div ng-show="stagingFilter != undefined"><b>Operator ID:</b> {{stagingFilter.operatorID }}</div>
+        <div ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
+          <b>Is Multi value:</b> {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
+          <b>Available Values:</b> <span ng-repeat="let v of apiValues.filterColumns[stagingFilter.columnID].availableValues">{{v.value}};</span><br />
+          <b>Values:</b> <span ng-repeat="let v of stagingFilter.value">{{v}};</span><br />
+        </div>
+        <div><b>Filter Body:</b></div>
+        <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(apiValues.savedFilterSet)}}</pre>
+      </fieldset>
+    </div>
+    <div class="tab-pane fade {{getActiveClassForTabContent('table')}}" id="tab1c" role="tabpanel" aria-labelledby="tab1">
+      <table class="table table-hover table-bordered table-striped" ng-show="httpResponse != undefined">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">ID</th>
+            <th scope="col">Username</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Reg. Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="let row of httpResponse.table; index as i" title="{{printJson(row)}}">
+            <th scope="row">{{row.rowNumber}}</th>
+            <td>{{row.id}}</td>
+            <td>{{row.username}}</td>
+            <td>{{row.firstName}} {{row.lastName}}</td>
+            <td>{{row.registrationDateTime}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-pane fade {{getActiveClassForTabContent('json')}}" id="tab2c" role="tabpanel" aria-labelledby="tab2">
+      <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(httpResponse)}}</pre>
+    </div>
+  </div>
+
+  <!-- page script -->
+  <script>
+    var app = angular.module("demoApp", []);
+    app.controller("demoAppCtrl", function ($scope, $http, $window) {
+      var $scope.apiValues = {
+        filterColumns: [], filterOperators: [], savedFilterSet: []
+      };
+      var $scope.listColumns = [];
+      var $scope.listOperators = [];
+      var $scope.httpResponse;
+      var $scope.stagingFilter = { columnID: -1, operatorID: -1, value: [] };
+      var $scope.isLoading;
+      var $scope.currResponseTab;
+      var submitBtn = $('#submitbtn');
+
+      function ngOnInit() {
+        $scope.isLoading = true;
+        $scope.currResponseTab = "debug";
+        $scope._httpService.get('/api/values').subscribe(values => {
+          $scope.apiValues = values.json();
+          $scope.isLoading = false;
+          $scope.stagingFilter = { columnID: -1, operatorID: -1, value: [] };
+          console.log($scope.apiValues);
+
+          let propsColumns = Object.keys($scope.apiValues.filterColumns);
+          let propsOperators = Object.keys($scope.apiValues.filterOperators);
+
+          $scope.listColumns = [];
+          $scope.listOperators = [];
+
+          for (let prop of propsColumns) {
+            if (prop && propsColumns[prop])
+              $scope.listColumns.push(propsColumns[prop]);
+          }
+
+          for (let prop of propsOperators) {
+            if (prop && propsOperators[prop])
+              $scope.listOperators.push(propsOperators[prop]);
+          }
+
+          console.log($scope.listOperators);
+        });
+      }
+
+      function changeResponseTab(newtab) {
+        $scope.currResponseTab = newtab;
+      }
+
+      function isCurrentTab(mytab) {
+        return (mytab == $scope.currResponseTab);
+      }
+
+      function getActiveClassForTab(mytab) {
+        if (mytab == $scope.currResponseTab)
+          return "active";
+        else
+          return "";
+      }
+
+      function getActiveClassForTabContent(mytab) {
+        if (mytab == $scope.currResponseTab)
+          return "show active";
+        else
+          return "";
+      }
+
+      function removeFilter(filterIndex) {
+        $scope.apiValues.savedFilterSet.splice(filterIndex, 1);
+      }
+
+      function onChangeStagingColumn() {
+        //$scope.stagingFilter.columnID = newID;
+        console.log("selected new column: " + $scope.stagingFilter.columnID);
+        //if ($scope.stagingOperator != undefined)
+        //{
+        //  $scope.stagingOperator.nativeElement.selectedIndex = 0;
+        //  //console.log($scope.stagingOperator);
+        //  //console.log("index: " + $scope.stagingOperator.nativeElement.selectedIndex);
+        //  //console.log("value: " + $scope.stagingOperator.nativeElement.value);
+        //  $scope.stagingFilter.operatorID = $scope.stagingOperator.nativeElement.value;
+        //}
+      }
+      function onChangeStagingOperator() {
+        //$scope.stagingFilter.operatorID = newID;
+        console.log("selected new operator: " + $scope.stagingFilter.operatorID);
+        $scope.stagingFilter.value = [];
+        $scope.stagingFilter.value.push("");
+      }
+      function AddFilter() {
+        $scope.apiValues.savedFilterSet.push({ columnID: Number.parseInt($scope.stagingFilter.columnID.toString()), operatorID: Number.parseInt($scope.stagingFilter.operatorID.toString()), value: $scope.stagingFilter.value });
+        $scope.stagingFilter = { columnID: -1, operatorID: -1, value: [] };
+      }
+      function printJson(obj) {
+        return JSON.stringify(obj);
+      }
+      function submitFilter() {
+        console.log("submitting:");
+        console.log($scope.apiValues.savedFilterSet);
+        $scope.isLoading = true;
+        $scope._httpService.post('/api/values', $scope.apiValues.savedFilterSet).subscribe(values => {
+          console.log(values);
+          $scope.httpResponse = values.json();
+          $scope.isLoading = false;
+          $scope.currResponseTab = "table";
+        });
+      }
+    }
+  </script>
+</body >
+</html >
