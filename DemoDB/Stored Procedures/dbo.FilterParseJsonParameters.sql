@@ -12,17 +12,14 @@
 --------------------------------
 Example Usage:
 --------------------------------
-DECLARE @SQL NVARCHAR(MAX), @JsonParams NVARCHAR(MAX) = N'{ "Parameters": 
-[
+DECLARE @SQL NVARCHAR(MAX), @JsonParams NVARCHAR(MAX) = N'[
 	{"ColumnID": "1", "OperatorID": "11", "Value": [ "2" ]},
-	{"ColumnID": "2", "OperatorID": "11", "Value": [ "RTCMLIVEDB3", "TheOptionLiveDB" ] },
-	{"ColumnID": "3", "OperatorID": "6", "Value": "2018-11-11 15:00"}
-]
-}', @JsonOrdering NVARCHAR(MAX) = N'{ "OrderingColumns": 
-[
-	{"columnId": "11", "isAscending": "1"},
-	{"columnId": "5", "isAscending": "1"}
-] }'
+	{"ColumnID": "2", "OperatorID": "11", "Value": [ "DB1", "DB2" ] },
+	{"ColumnID": "3", "OperatorID": "6",  "Value": [ "2018-11-11 15:00" ] }
+]', @JsonOrdering NVARCHAR(MAX) = N'[
+	{"ColumnId": "11", "Ascending": "1"},
+	{"ColumnId": "5",  "Ascending": "1"}
+]'
 
 EXEC dbo.FilterParseJsonParameters @SourceTableAlias = 'Members', @JsonParams = @JsonParams, @JsonOrdering = @JsonOrdering, @ParsedSQL = @SQL OUTPUT
 
@@ -51,19 +48,20 @@ DECLARE @TVPParams dbo.UDT_FilterParameters, @TVPOrdering dbo.UDT_ColumnOrder
 INSERT INTO @TVPOrdering
 SELECT
 	ColumnIndex			= [key],
-	OrderingColumnID	= CONVERT(int, JSON_VALUE([value], '$.columnId')),
-	IsAscending			= CONVERT(bit, JSON_VALUE([value], '$.isAscending'))
+	OrderingColumnID	= CONVERT(int, JSON_VALUE([value], '$.ColumnId')),
+	IsAscending			= CONVERT(bit, JSON_VALUE([value], '$.Ascending'))
 FROM
-	OPENJSON(@JsonOrdering, '$.OrderingColumns')
+	OPENJSON(@JsonOrdering, '$')
 
 INSERT INTO @TVPParams
 SELECT
-	ParamIndex			= [key],
-	FilterColumnID		= CONVERT(int, JSON_VALUE([value], '$.ColumnID')),
-	FilterOperatorID	= CONVERT(int, JSON_VALUE([value], '$.OperatorID')),
-	Val					= JSON_VALUE([value], '$.Value')
+	ParamIndex			= P.[key],
+	FilterColumnID		= CONVERT(int, JSON_VALUE(P.[value], '$.ColumnID')),
+	FilterOperatorID	= CONVERT(int, JSON_VALUE(P.[value], '$.OperatorID')),
+	Val					= V.[value]
 FROM
-	OPENJSON(@JsonParams, '$.Parameters')
+	OPENJSON(@JsonParams, '$') as P
+CROSS APPLY OPENJSON(JSON_QUERY(P.[value], '$.Value'), '$') AS V
 
 -- Run the actual procedure with table-valued-parameters
 EXEC dbo.FilterParseTVPParameters @SourceTableAlias, @TVPParams, @TVPOrdering, @PageSize, @Offset, @ParsedSQL OUTPUT, @ForceRecompile, @RowNumberColumn, @RunCommand

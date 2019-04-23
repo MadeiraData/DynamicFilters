@@ -18,8 +18,8 @@ INSERT INTO @TVPParams
 (ColumnID, OperatorID, [Value])
 VALUES
 (1, 11, N'2'),
-(2, 11, N'RTCMLIVEDB3'),
-(2, 11, N'TheOptionLiveDB'),
+(2, 11, N'DB1'),
+(2, 11, N'DB2'),
 (3, 6, N'2018-11-11 15:00')
 
 INSERT INTO @TVPOrdering
