@@ -50,164 +50,165 @@
   </style>
 </head>
 <body ng-app="demoApp" ng-controller="demoAppCtrl" ng-init="ngOnInit()">
-  <h1>Demo Web App</h1>
+  <div class="container-fluid">
+    <h1>Demo Web App</h1>
 
-  <div class="form-group row" ng-show="apiValues != undefined">
-    <div class="col-sm-6">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Page Size:</span>
-        </div>
-        <input type="number" min="1" max="500" step="1" id="iPageSize" class="form-control"
-               data-ng-model="pageSize" />
-      </div>
-    </div>
-    <div class="col-sm-6">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Offset:</span>
-        </div>
-        <input type="number" min="1" step="1" id="iPageOffset" class="form-control"
-               data-ng-model="pageOffset" />
-      </div>
-    </div>
-  </div>
-
-  <div class="form-group" ng-show="apiValues != undefined">
-    <div class="input-group" ng-repeat="f in apiValues.savedFilterSet">
-      <div class="input-group-prepend">
-        <span class="input-group-text"><strong>{{apiValues.filterColumns[f.columnID].displayName}}</strong></span>
-      </div>
-      <span class="input-group-text">{{apiValues.filterOperators[f.operatorID].name}}:</span>
-      <span class="form-control">{{printJson(f.value,f.columnID)}}</span>
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button" ng-click="editFilter(f,$index)" title="Edit"><i class="fas fa-edit"></i></button>
-        <button class="btn btn-outline-secondary" type="button" ng-click="removeFilter($index)" title="Remove"><i class="fas fa-times"></i></button>
-      </div>
-    </div>
-    <div class="input-group">
-      <button type="button" class="btn btn-lg btn-outline-success" ng-click="submitFilter()">Search</button>
-    </div>
-  </div>
-
-  <div class="form-group" ng-show="stagingFilter != undefined">
-    <div class="input-group">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Filter on:</span>
-      </div>
-      <select id="stagingFilterColumn" class="form-control"
-              data-ng-model="stagingFilter.columnID"
-              data-ng-options="apiValues.filterColumns[c].displayName for c in listColumns"
-              ng-change="onChangeStagingColumn()"></select>
-
-      <select id="stagingFilterOperator" class="form-control"
-              ng-change="onChangeStagingOperator()"
-              ng-show="stagingFilter.columnID!=''&&stagingFilter.columnID!=-1"
-              data-ng-model="stagingFilter.operatorID"
-              data-ng-options="apiValues.filterOperators[op].name for op in apiValues.filterColumns[stagingFilter.columnID].supportedFilterOperators"></select>
-
-      <input id="stagingFilterValue" class="form-control"
-             ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length == 0"
-             data-ng-model="stagingFilter.value[0]" />
-
-      <select id="stagingFilterValue" class="form-control"
-              ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0"
-              data-ng-model="stagingFilter.value[0]">
-        <option ng-repeat="v in apiValues.filterColumns[stagingFilter.columnID].availableValues" ng-value="v.value">{{v.label}}</option>
-      </select>
-
-      <select id="stagingFilterValue" class="form-control" multiple="multiple"
-              ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==true && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0"
-              data-ng-model="stagingFilter.value">
-        <option ng-repeat="v in apiValues.filterColumns[stagingFilter.columnID].availableValues" ng-value="v.value">{{v.label}}</option>
-      </select>
-
-      <div class="input-group-append">
-        <button type="button" class="btn btn-outline-primary" title="Add"
-                ng-show="stagingFilterIndex == undefined && apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterColumns[stagingFilter.columnID] != undefined && stagingFilter.value[0] != undefined"
-                ng-click="AddFilter()">
-          <i class="fas fa-plus"></i>
-        </button>
-
-        <button type="button" class="btn btn-outline-primary" title="Save"
-                ng-show="stagingFilterIndex != undefined && apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterColumns[stagingFilter.columnID] != undefined && stagingFilter.value[0] != undefined"
-                ng-click="AddFilter()">
-          <i class="fas fa-save"></i>
-        </button>
-
-        <button type="button" class="btn btn-outline-secondary" title="Cancel"
-                ng-show="stagingFilterIndex != undefined"
-                ng-click="cancelEditFilter()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-  <img src="assets/spinner.gif" title="Loading..." ng-show="isLoading" />
-
-  <br />
-
-  <nav>
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link {{getActiveClassForTab('debug')}}" id="tab3" data-toggle="tab" href="#tab3c" ng-click="changeResponseTab('debug')" role="tab" aria-controls="tab3">Input Debug</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{getActiveClassForTab('table')}}" id="tab1" data-toggle="tab" href="#tab1c" ng-click="changeResponseTab('table')" role="tab" aria-controls="tab1">Table Response</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{getActiveClassForTab('json')}}" id="tab2" data-toggle="tab" href="#tab2c" ng-click="changeResponseTab('json')" role="tab" aria-controls="tab2">JSON Response</a>
-      </li>
-    </ul>
-  </nav>
-  
-  <content class="tab-content" id="myTabContent">
-    <div class="tab-pane fade {{getActiveClassForTabContent('debug')}}" id="tab3c" role="tabpanel" aria-labelledby="tab3">
-      <fieldset ng-show="apiValues != undefined && stagingFilter != undefined">
-        <legend>Staging Filter:</legend>
-        <div style="background-color: lightgray">
-          <b>Column ID:</b> {{stagingFilter.columnID }}
-          <br />
-          <b>Operator ID:</b> {{stagingFilter.operatorID }}
-          <div ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
-            <b>Is Multi value:</b> {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
-            <b>Available Values:</b> <span ng-repeat="v in apiValues.filterColumns[stagingFilter.columnID].availableValues">{{v.value}};</span><br />
-            <b>Values:</b> <span ng-repeat="v in stagingFilter.value">{{v}};</span><br />
+    <div class="form-group row" ng-show="apiValues != undefined">
+      <div class="col-sm-6">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Page Size:</span>
           </div>
+          <input type="number" min="1" max="500" step="1" id="iPageSize" class="form-control"
+                 data-ng-model="pageSize" />
         </div>
-      </fieldset>
-      <fieldset ng-show="apiValues != undefined">
-        <legend>Filter Body:</legend>
-        <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(apiValues.savedFilterSet)}}</pre>
-      </fieldset>
+      </div>
+      <div class="col-sm-6">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Offset:</span>
+          </div>
+          <input type="number" min="1" step="1" id="iPageOffset" class="form-control"
+                 data-ng-model="pageOffset" />
+        </div>
+      </div>
     </div>
-    <div class="tab-pane fade {{getActiveClassForTabContent('table')}}" id="tab1c" role="tabpanel" aria-labelledby="tab1">
-      <table class="table table-hover table-bordered table-striped" ng-show="httpResponse != undefined">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">ID</th>
-            <th scope="col">Username</th>
-            <th scope="col">Full Name</th>
-            <th scope="col">Reg. Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="row in httpResponse.table" title="{{printJson([row])}}">
-            <th scope="row">{{row.rowNumber}}</th>
-            <td>{{row.id}}</td>
-            <td>{{row.username}}</td>
-            <td>{{row.firstName}} {{row.lastName}}</td>
-            <td>{{row.registrationDateTime}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="tab-pane fade {{getActiveClassForTabContent('json')}}" id="tab2c" role="tabpanel" aria-labelledby="tab2">
-      <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson([httpResponse])}}</pre>
-    </div>
-  </content>
 
+    <div class="form-group" ng-show="apiValues != undefined">
+      <div class="input-group" ng-repeat="f in apiValues.savedFilterSet">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><strong>{{apiValues.filterColumns[f.columnID].displayName}}</strong></span>
+        </div>
+        <span class="input-group-text">{{apiValues.filterOperators[f.operatorID].name}}:</span>
+        <span class="form-control">{{printJson(f.value,f.columnID)}}</span>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" ng-click="editFilter(f,$index)" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-outline-secondary" type="button" ng-click="removeFilter($index)" title="Remove"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <div class="input-group">
+        <button type="button" class="btn btn-lg btn-outline-success" ng-click="submitFilter()">Search</button>
+      </div>
+    </div>
+
+    <div class="form-group" ng-show="stagingFilter != undefined">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Filter on:</span>
+        </div>
+        <select id="stagingFilterColumn" class="form-control"
+                data-ng-model="stagingFilter.columnID"
+                data-ng-options="apiValues.filterColumns[c].displayName for c in listColumns"
+                ng-change="onChangeStagingColumn()"></select>
+
+        <select id="stagingFilterOperator" class="form-control"
+                ng-change="onChangeStagingOperator()"
+                ng-show="stagingFilter.columnID!=''&&stagingFilter.columnID!=-1"
+                data-ng-model="stagingFilter.operatorID"
+                data-ng-options="apiValues.filterOperators[op].name for op in apiValues.filterColumns[stagingFilter.columnID].supportedFilterOperators"></select>
+
+        <input id="stagingFilterValue" class="form-control"
+               ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length == 0"
+               data-ng-model="stagingFilter.value[0]" />
+
+        <select id="stagingFilterValue" class="form-control"
+                ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==false && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0"
+                data-ng-model="stagingFilter.value[0]">
+          <option ng-repeat="v in apiValues.filterColumns[stagingFilter.columnID].availableValues" ng-value="v.value">{{v.label}}</option>
+        </select>
+
+        <select id="stagingFilterValue" class="form-control" multiple="multiple"
+                ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterOperators[stagingFilter.operatorID].isMultiValue==true && apiValues.filterColumns[stagingFilter.columnID].availableValues.length > 0"
+                data-ng-model="stagingFilter.value">
+          <option ng-repeat="v in apiValues.filterColumns[stagingFilter.columnID].availableValues" ng-value="v.value">{{v.label}}</option>
+        </select>
+
+        <div class="input-group-append">
+          <button type="button" class="btn btn-outline-primary" title="Add"
+                  ng-show="stagingFilterIndex == undefined && apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterColumns[stagingFilter.columnID] != undefined && stagingFilter.value[0] != undefined"
+                  ng-click="AddFilter()">
+            <i class="fas fa-plus"></i>
+          </button>
+
+          <button type="button" class="btn btn-outline-primary" title="Save"
+                  ng-show="stagingFilterIndex != undefined && apiValues.filterOperators[stagingFilter.operatorID] != undefined && apiValues.filterColumns[stagingFilter.columnID] != undefined && stagingFilter.value[0] != undefined"
+                  ng-click="AddFilter()">
+            <i class="fas fa-save"></i>
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary" title="Cancel"
+                  ng-show="stagingFilterIndex != undefined"
+                  ng-click="cancelEditFilter()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <img src="assets/spinner.gif" title="Loading..." ng-show="isLoading" />
+
+    <br />
+
+    <nav>
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link {{getActiveClassForTab('debug')}}" id="tab3" data-toggle="tab" href="#tab3c" ng-click="changeResponseTab('debug')" role="tab" aria-controls="tab3">Input Debug</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {{getActiveClassForTab('table')}}" id="tab1" data-toggle="tab" href="#tab1c" ng-click="changeResponseTab('table')" role="tab" aria-controls="tab1">Table Response</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {{getActiveClassForTab('json')}}" id="tab2" data-toggle="tab" href="#tab2c" ng-click="changeResponseTab('json')" role="tab" aria-controls="tab2">JSON Response</a>
+        </li>
+      </ul>
+    </nav>
+
+    <content class="tab-content" id="myTabContent">
+      <div class="tab-pane fade {{getActiveClassForTabContent('debug')}}" id="tab3c" role="tabpanel" aria-labelledby="tab3">
+        <fieldset ng-show="apiValues != undefined && stagingFilter != undefined">
+          <legend>Staging Filter:</legend>
+          <div style="background-color: lightgray">
+            <b>Column ID:</b> {{stagingFilter.columnID }}
+            <br />
+            <b>Operator ID:</b> {{stagingFilter.operatorID }}
+            <div ng-show="apiValues.filterOperators[stagingFilter.operatorID] != undefined">
+              <b>Is Multi value:</b> {{ apiValues.filterOperators[stagingFilter.operatorID].isMultiValue }}<br />
+              <b>Available Values:</b> <span ng-repeat="v in apiValues.filterColumns[stagingFilter.columnID].availableValues">{{v.value}};</span><br />
+              <b>Values:</b> <span ng-repeat="v in stagingFilter.value">{{v}};</span><br />
+            </div>
+          </div>
+        </fieldset>
+        <fieldset ng-show="apiValues != undefined">
+          <legend>Filter Body:</legend>
+          <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson(apiValues.savedFilterSet)}}</pre>
+        </fieldset>
+      </div>
+      <div class="tab-pane fade {{getActiveClassForTabContent('table')}}" id="tab1c" role="tabpanel" aria-labelledby="tab1">
+        <table class="table table-hover table-bordered table-striped" ng-show="httpResponse != undefined">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">ID</th>
+              <th scope="col">Username</th>
+              <th scope="col">Full Name</th>
+              <th scope="col">Reg. Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in httpResponse.table" title="{{printJson([row])}}">
+              <th scope="row">{{row.rowNumber}}</th>
+              <td>{{row.id}}</td>
+              <td>{{row.username}}</td>
+              <td>{{row.firstName}} {{row.lastName}}</td>
+              <td>{{row.registrationDateTime}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane fade {{getActiveClassForTabContent('json')}}" id="tab2c" role="tabpanel" aria-labelledby="tab2">
+        <pre class="pre-scrollable" style="overflow:auto; white-space:pre-wrap; word-wrap:break-word; background-color: lightgray">{{printJson([httpResponse])}}</pre>
+      </div>
+    </content>
+  </div>
   <!-- page script -->
   <script>
     var app = angular.module("demoApp", []);
