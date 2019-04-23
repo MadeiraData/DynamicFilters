@@ -10,7 +10,7 @@ The new version introduces two new methods for dynamically parsing filter sets:
 1. Json parameter sets.
 2. Table-Valued Parameters.
 
-As mentioned above, this repository also includes a fully-functional demo web app, implemented in ASP.NET Core MVC + Angular 4, to demonstrate the intended functionality on the front-end side.
+As mentioned above, this repository also includes a fully-functional demo web app, implemented in ASP.NET Core MVC + Angular, to demonstrate the intended functionality on the front-end side.
 
 The demo web app was built based on the following tutorial: https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa
 
@@ -26,9 +26,9 @@ The demo web app was built based on the following tutorial: https://medium.com/@
 
 1. Start by forking or cloning the repository to your computer, and opening the DynamicFilters solution in Visual Studio.
 2. Creating the Database: Do one of the following:
-    - Open the `DemoDB_Create.sql` script file and run it in your local SQL Server instance. Or:
+	- Open the `DemoDB_Create.sql` script file and run it in your local SQL Server instance (must be **in SQLCMD mode**). Or:
 	- Manually publish the `DemoDB.dacpac` dacpac file into your database. Or:
-    - Open the DemoDB database project, and **publish** it to your local SQL Server instance.
+	- Open the DemoDB database project, and **publish** it to your local SQL Server instance.
 3. Optionally: Change the connection string in `\DemoWebApp\appsettings.json` in case you're not using default settings (localhost server, DemoDB database, Windows Authentication).
 4. This should only be done once: Right click on the `run_me_first_npm_init.bat` executable and **Run it as Administrator** , to install all angular dependencies and build the app.
 5. Whenever you want to run the app: Right click on the `run_core_server.bat` executable and **Run it as Administrator**.
