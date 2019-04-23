@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Data.Common;
 using System.Data;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -50,16 +51,34 @@ namespace DemoWebApp
     public List<FilterParameterSet> SavedFilterSet { get; set; }
   }
 
+  public struct SearchSubmitBody
+  {
+    public int PageSize { get; set; }
+    public int PageOffset { get; set; }
+    public List<FilterParameterSet> FilterSet { get; set; }
+  }
+
   [Route("api/[controller]")]
   public class ValuesController : Controller
   {
+    private readonly IConfiguration _configuration;
+    private string _connectionString;
+
+    public ValuesController(IConfiguration configuration)
+    {
+      _configuration = configuration;
+
+      _connectionString = _configuration.GetConnectionString("DefaultConnection");
+      Console.WriteLine(_connectionString);
+    }
+    
     [HttpGet]
     public FiltersResultSet Get()
     {
       Dictionary<int, FilterColumn> rvColumns = new Dictionary<int, FilterColumn>();
       Dictionary<int, FilterOperator> rvOperators = new Dictionary<int, FilterOperator>();
       List<FilterParameterSet> rvFilters = new List<FilterParameterSet>();
-      SqlConnection conn = new SqlConnection("Server=.;Database=DemoDB;Trusted_Connection=True;");
+      SqlConnection conn = new SqlConnection(_connectionString);
       conn.Open();
 
       using (SqlCommand cmd = new SqlCommand("SELECT * FROM dbo.FilterOperators", conn))
@@ -124,13 +143,10 @@ namespace DemoWebApp
       conn.Close();
 
       // sample data
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 4, OperatorID = 1, Value = new string[] { "on" } });
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 4, OperatorID = 4, Value = new string[] { "d" } });
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 3, OperatorID = 3, Value = new string[] { "Br" } });
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 6, OperatorID = 11, Value = new string[] { "1" } });
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 7, OperatorID = 9, Value = new string[] { "1" } });
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 8, OperatorID = 9, Value = new string[] { "2" } });
-      rvFilters.Add(new FilterParameterSet() { ColumnID = 10, OperatorID = 5, Value = new string[] { "2017-01-01" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 3, OperatorID = 1, Value = new string[] { "on" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 3, OperatorID = 4, Value = new string[] { "a" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 5, OperatorID = 11, Value = new string[] { "1", "2", "4" } });
+      rvFilters.Add(new FilterParameterSet() { ColumnID = 9, OperatorID = 5, Value = new string[] { "2018-01-01" } });
 
       return new FiltersResultSet() { FilterColumns = rvColumns, FilterOperators = rvOperators, SavedFilterSet = rvFilters };
     }
@@ -144,18 +160,20 @@ namespace DemoWebApp
 
     // POST api/<controller>
     [HttpPost]
-    public JsonResult Post([FromBody]List<FilterParameterSet> value)
+    public JsonResult Post([FromBody]SearchSubmitBody value)
     {
-      JsonResult rv = Json(value);
+      JsonResult rv = Json(value.FilterSet);
 
-      SqlConnection conn = new SqlConnection("Server=.;Database=DemoDB;Trusted_Connection=True;");
+      SqlConnection conn = new SqlConnection(_connectionString);
       conn.Open();
 
       using (SqlCommand cmd = new SqlCommand("dbo.FilterParseJsonParameters", conn))
       {
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("SourceTableAlias", "Members");
-        cmd.Parameters.AddWithValue("JsonParams", JsonConvert.SerializeObject(Json(value).Value));
+        cmd.Parameters.AddWithValue("PageSize", value.PageSize);
+        cmd.Parameters.AddWithValue("Offset", value.PageOffset);
+        cmd.Parameters.AddWithValue("JsonParams", JsonConvert.SerializeObject(Json(value.FilterSet).Value));
         //cmd.Parameters.AddWithValue("JsonOrdering", @"{ 'OrderingColumns': [{'columnId': 11, 'isAscending': 1},{ 'columnId': 5, 'isAscending': 1}] }");
         cmd.Parameters.Add(new SqlParameter("ParsedSQL", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output });
 
