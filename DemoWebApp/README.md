@@ -1,3 +1,5 @@
+> As of 23rd of April, 2019, the Angular 4 client of this app is no longer up-to-date. Please use `client.html` instead of the default page for the purpose of this demo.
+
 # DynamicFilters
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.1.
