@@ -4,7 +4,7 @@ This repository includes an example front-end website, and a back-end database, 
 
 This is an enhanced version of FilterParseXMLParameters which is available here:
 
-https://eitanblumin.com/2018/10/28/dynamic-search-queries-versus-sql-injection/
+[https://eitanblumin.com/2018/10/28/dynamic-search-queries-versus-sql-injection](https://eitanblumin.com/2018/10/28/dynamic-search-queries-versus-sql-injection/)
 
 The new version introduces two new methods for dynamically parsing filter sets:
 1. Json parameter sets.
@@ -12,7 +12,7 @@ The new version introduces two new methods for dynamically parsing filter sets:
 
 As mentioned above, this repository also includes a fully-functional demo web app, implemented in ASP.NET Core MVC + Angular, to demonstrate the intended functionality on the front-end side.
 
-The demo web app was built based on the following tutorial: https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa
+The demo web app was built based on the following tutorial: [https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa](https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa)
 
 ## Prerequisites
 
