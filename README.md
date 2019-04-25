@@ -32,4 +32,4 @@ The demo web app was built based on the following tutorial: https://medium.com/@
 3. Optionally: Change the connection string in `\DemoWebApp\appsettings.json` in case you're not using default settings (localhost server, DemoDB database, Windows Authentication).
 4. This should only be done once: Right click on the `run_me_first_npm_init.bat` executable and **Run it as Administrator** , to install all angular dependencies and build the app.
 5. Whenever you want to run the app: Right click on the `run_core_server.bat` executable and **Run it as Administrator**.
-6. The web app should now be available at http://localhost:26048/client.html
+6. The web app should now be available at [http://localhost:26048/client.html](http://git.eitanblumin.com/DynamicFilters/)
