@@ -24,7 +24,7 @@ The demo web app was built based on the following tutorial: https://medium.com/@
 
 ## Installation & Setup
 
-1. Start by forking or cloning the repository to your computer, and opening the DynamicFilters solution in Visual Studio.
+1. Start by [forking or cloning this repository](https://github.com/EitanBlumin/DynamicFilters) to your computer, and opening the DynamicFilters solution in Visual Studio.
 2. Creating the Database: Do one of the following:
 	- Open the [DemoDB_Create.sql](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB_Create.sql) script file and run it in your local SQL Server instance (must be **in SQLCMD mode**). Or:
 	- Manually publish the `DemoDB.dacpac` dacpac file into your database. Or:
