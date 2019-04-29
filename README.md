@@ -14,12 +14,6 @@ As mentioned above, this repository also includes a fully-functional demo web ap
 
 The demo web app was built based on the following tutorial: [https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa](https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa)
 
-## Presentation
-
-This GitHub repository also includes an accompanying Powerpoint presentation, available here:
-
-- [DynamicFilters_Presentation_Eng.pptx](https://github.com/EitanBlumin/DynamicFilters/blob/master/DynamicFilters_Presentation_Eng.pptx)
-
 ## Prerequisites
 
 - [Node.js Installed](https://nodejs.org/en/download/)
@@ -39,3 +33,16 @@ This GitHub repository also includes an accompanying Powerpoint presentation, av
 4. This should only be done once: Right click on the `run_me_first_npm_init.bat` executable and **Run it as Administrator** , to install all angular dependencies and build the app.
 5. Whenever you want to run the app: Right click on the `run_core_server.bat` executable and **Run it as Administrator**.
 6. The web app should now be available at [http://localhost:26048/client.html](http://localhost:26048/client.html)
+
+## Presentation
+
+This GitHub repository also includes an accompanying Powerpoint presentation, available here:
+
+- [DynamicFilters_Presentation_Eng.pptx](https://github.com/EitanBlumin/DynamicFilters/blob/master/DynamicFilters_Presentation_Eng.pptx)
+
+## Main Stored Procedures
+
+The "FilterParse" stored procedures are the "main engine" for this solution. They can be found here:
+
+- [FilterParseJsonParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseJsonParameters.sql)
+- [FilterParseTVPParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseTVPParameters.sql)
