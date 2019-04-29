@@ -2,7 +2,7 @@
 
 This repository includes an example front-end website, and a back-end database, for demonstrating fully-dynamic filtering capabilities (column, operator, value). Fully protected from SQL Injection, and based on "low-code development" principles.
 
-This is an enhanced version of FilterParseXMLParameters which is available here:
+This is an enhanced version of **FilterParseXMLParameters** which is available here:
 
 [https://eitanblumin.com/2018/10/28/dynamic-search-queries-versus-sql-injection](https://eitanblumin.com/2018/10/28/dynamic-search-queries-versus-sql-injection/)
 
