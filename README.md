@@ -14,6 +14,12 @@ As mentioned above, this repository also includes a fully-functional demo web ap
 
 The demo web app was built based on the following tutorial: [https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa](https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa)
 
+## Presentation
+
+This GitHub repository also includes an accompanying Powerpoint presentation, available here:
+
+- [DynamicFilters_Presentation_Eng.pptx](https://github.com/EitanBlumin/DynamicFilters/blob/master/DynamicFilters_Presentation_Eng.pptx)
+
 ## Prerequisites
 
 - [Node.js Installed](https://nodejs.org/en/download/)
@@ -26,10 +32,10 @@ The demo web app was built based on the following tutorial: [https://medium.com/
 
 1. Start by [forking or cloning this repository](https://github.com/EitanBlumin/DynamicFilters) to your computer, and opening the DynamicFilters solution in Visual Studio.
 2. Creating the Database: Do one of the following:
-	- Open the [DemoDB_Create.sql](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB_Create.sql) script file and run it in your local SQL Server instance (must be **in SQLCMD mode**). Or:
-	- Manually publish the `DemoDB.dacpac` dacpac file into your database. Or:
+	- Open the [DemoDB_Create.sql](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB Publish/DemoDB_Create.sql) script file and run it in your local SQL Server instance (must be **in SQLCMD mode**). Or:
+	- Manually publish the [DemoDB.dacpac](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB Publish/DemoDB.dacpac) file into your database. Or:
 	- Open the DemoDB database project, and **publish** it to your local SQL Server instance.
 3. Optionally: Change the connection string in `\DemoWebApp\appsettings.json` in case you're not using default settings (localhost server, DemoDB database, Windows Authentication).
 4. This should only be done once: Right click on the `run_me_first_npm_init.bat` executable and **Run it as Administrator** , to install all angular dependencies and build the app.
 5. Whenever you want to run the app: Right click on the `run_core_server.bat` executable and **Run it as Administrator**.
-6. The web app should now be available at [http://localhost:26048/client.html](http://git.eitanblumin.com/DynamicFilters/)
+6. The web app should now be available at [http://localhost:26048/client.html](http://localhost:26048/client.html)
