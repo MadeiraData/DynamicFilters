@@ -32,7 +32,7 @@ CREATE PROCEDURE [dbo].[FilterParseJsonParameters]
 	@JsonOrdering		NVARCHAR(MAX) = NULL,	-- the JSON definition of the column ordering (optional)
 	@PageSize			INT = 9999,
 	@Offset				INT = 1,
-	@ParsedSQL			NVARCHAR(MAX) OUTPUT,	-- returns the parsed SQL command to be used for sp_executesql.
+	@ParsedSQL			NVARCHAR(MAX) = NULL OUTPUT,	-- returns the parsed SQL command to be used for sp_executesql.
 	@ForceRecompile		BIT = 1,				-- forces the query to do parameter sniffing using OPTION(RECOMPILE)
 	@RowNumberColumn	SYSNAME = 'RowNumber',	-- you can optionally change the name of the RowNumber column used for pagination (to avoid collision with existing columns)
 	@RunCommand			BIT = 1					-- determines whether to run the parsed command (otherwise just output the command w/o running it)
