@@ -45,9 +45,7 @@ CREATE PROCEDURE [dbo].[FilterParseTVPParameters]
 	@ForceRecompile		BIT = 1,				-- forces the query to do parameter sniffing using OPTION(RECOMPILE)
 	@RowNumberColumn	SYSNAME = 'RowNumber',	-- you can optionally change the name of the RowNumber column used for pagination (to avoid collision with existing columns)
 	@RunCommand			BIT = 0					-- determines whether to run the parsed command (otherwise just output the command w/o running it)
---WITH NATIVE_COMPILATION, SCHEMABINDING
 AS BEGIN
---ATOMIC WITH(TRANSACTION ISOLATION LEVEL = SNAPSHOT, LANGUAGE = N'us_english')
 SET XACT_ABORT ON;
 SET ARITHABORT ON;
 SET NOCOUNT ON;
