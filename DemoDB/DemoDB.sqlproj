@@ -248,6 +248,14 @@
     <Build Include="Security\Marketing.sql" />
     <Build Include="Security\Inventory.sql" />
     <Build Include="Views\VW_Members.sql" />
+    <Build Include="Stored Procedures\dbo.FilterParseJsonParameters_Standalone.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
+    <Build Include="Stored Procedures\dbo.FilterParseJsonParameters_with_Encapsulation.sql">
+      <AnsiNulls>On</AnsiNulls>
+      <QuotedIdentifier>On</QuotedIdentifier>
+    </Build>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\FilterParseJsonParameters_Setup.sql" />
