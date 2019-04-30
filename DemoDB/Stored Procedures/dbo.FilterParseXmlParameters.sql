@@ -13,14 +13,14 @@
 Example Usage:
 --------------------------------
 DECLARE @SQL NVARCHAR(MAX), @XmlParams XML = N'<Parameters>
-    <ParameterValue columnId="1" operatorId="1">
+    <Parameter columnId="1" operatorId="1">
 		<Value>John</Value>
-	</ParameterValue>
-	<ParameterValue columnId="2" operatorId="4">
+	</Parameter>
+	<Parameter columnId="2" operatorId="4">
         <Value>1</Value>
         <Value>2</Value>
         <Value>3</Value>
-    </ParameterValue>
+    </Parameter>
 </Parameters>', @XmlOrdering XML = N'<OrderingColumns>
 	<ColumnOrder columnId="1" isAscending="1" />
 	<ColumnOrder columnId="3" isAscending="0" />
@@ -65,7 +65,7 @@ SELECT
 	FilterOperatorID	= X.value('(@operatorId)[1]','int'),
 	Val					= V.[value]
 FROM
-	@XmlParams.nodes('/Parameters/ParameterValue') AS T(X)
+	@XmlParams.nodes('/Parameters/Parameter') AS T(X)
 CROSS APPLY (SELECT XV.value('(text())[1]', 'nvarchar(max)') AS [Value] FROM X.nodes('./Value') AS TV(XV)) AS V
 
 -- Run the actual procedure with table-valued-parameters
