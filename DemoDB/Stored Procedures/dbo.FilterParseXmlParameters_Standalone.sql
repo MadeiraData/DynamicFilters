@@ -13,17 +13,17 @@
 Example Usage:
 --------------------------------
 DECLARE @SQL NVARCHAR(MAX), @XmlParams XML = N'<Parameters>
-    <Parameter columnId="3" operatorId="3">
-		<Value>Ron</Value>
+    <Parameter columnId="1" operatorId="11">
+		<Value>1</Value>
+		<Value>2</Value>
+		<Value>3</Value>
 	</Parameter>
-	<Parameter columnId="5" operatorId="11">
-        <Value>1</Value>
-        <Value>2</Value>
-        <Value>3</Value>
+	<Parameter columnId="3" operatorId="6">
+        <Value>2018-11-11 15:00</Value>
     </Parameter>
 </Parameters>', @XmlOrdering XML = N'<OrderingColumns>
 	<ColumnOrder columnId="1" isAscending="1" />
-	<ColumnOrder columnId="3" isAscending="0" />
+	<ColumnOrder columnId="5" isAscending="0" />
 </OrderingColumns>'
 
 EXEC dbo.FilterParseXmlParameters_Standalone @SourceTableAlias = 'Members', @XmlParams = @XmlParams, @XmlOrdering = @XmlOrdering, @ParsedSQL = @SQL OUTPUT
@@ -40,9 +40,9 @@ CREATE PROCEDURE [dbo].[FilterParseXmlParameters_Standalone]
 	@PageSize			INT = 9999,
 	@Offset				INT = 1,
 	@ParsedSQL			NVARCHAR(MAX) = NULL OUTPUT,	-- returns the parsed SQL command to be used for sp_executesql.
-	@ForceRecompile		BIT = 1,				-- forces the query to do parameter sniffing using OPTION(RECOMPILE)
+	@ForceRecompile		BIT = 0,				-- forces the query to do parameter sniffing using OPTION(RECOMPILE)
 	@RowNumberColumn	SYSNAME = 'RowNumber',	-- you can optionally change the name of the RowNumber column used for pagination (to avoid collision with existing columns)
-	@RunCommand			BIT = 1					-- determines whether to run the parsed command (otherwise just output the command w/o running it)
+	@RunCommand			BIT = 0					-- determines whether to run the parsed command (otherwise just output the command w/o running it)
 AS BEGIN
 SET XACT_ABORT ON;
 SET ARITHABORT ON;

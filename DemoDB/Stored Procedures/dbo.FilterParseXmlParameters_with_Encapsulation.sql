@@ -13,17 +13,17 @@
 Example Usage:
 --------------------------------
 DECLARE @SQL NVARCHAR(MAX), @XmlParams XML = N'<Parameters>
-    <Parameter columnId="3" operatorId="3">
-		<Value>Ron</Value>
+    <Parameter columnId="1" operatorId="11">
+		<Value>1</Value>
+		<Value>2</Value>
+		<Value>3</Value>
 	</Parameter>
-	<Parameter columnId="5" operatorId="11">
-        <Value>1</Value>
-        <Value>2</Value>
-        <Value>3</Value>
+	<Parameter columnId="3" operatorId="6">
+        <Value>2018-11-11 15:00</Value>
     </Parameter>
 </Parameters>', @XmlOrdering XML = N'<OrderingColumns>
 	<ColumnOrder columnId="1" isAscending="1" />
-	<ColumnOrder columnId="3" isAscending="0" />
+	<ColumnOrder columnId="5" isAscending="0" />
 </OrderingColumns>'
 
 DECLARE 
@@ -34,8 +34,16 @@ EXEC dbo.[FilterParseXmlParameters_with_Encapsulation] @SourceTableAlias = 'Memb
 		, @ParsedSQL = @SQL OUTPUT, @CMD = @CMD OUTPUT, @CMDParams = @CMDParams OUTPUT
 
 PRINT @SQL
+PRINT '------------------------------------'
+PRINT @CMD
+PRINT '------------------------------------'
+PRINT @CMDParams
 
-EXEC sp_executesql @SQL, N'@XmlParams NVARCHAR(MAX), @CMD NVARCHAR(MAX), @CMDParams NVARCHAR(MAX)', @XmlParams, @CMD, @CMDParams
+SELECT @SQL, @CMD, @CMDParams
+
+EXEC sp_executesql @SQL
+, N'@XmlParams NVARCHAR(MAX), @CMD NVARCHAR(MAX), @CMDParams NVARCHAR(MAX)'
+, @XmlParams, @CMD, @CMDParams
 
 */
 CREATE PROCEDURE [dbo].[FilterParseXmlParameters_with_Encapsulation]
@@ -47,7 +55,7 @@ CREATE PROCEDURE [dbo].[FilterParseXmlParameters_with_Encapsulation]
 	@ParsedSQL			NVARCHAR(MAX) = NULL OUTPUT,	-- returns the parsed SQL command to be used for outer sp_executesql.
 	@CMD				NVARCHAR(MAX) = NULL OUTPUT,	-- returns the inner SQL command to be delivered for inner sp_executesql
 	@CMDParams			NVARCHAR(MAX) = NULL OUTPUT,	-- returns the inner SQL command parameters to be delivered for inner sp_executesql
-	@ForceRecompile		BIT = 1,				-- forces the query to do parameter sniffing using OPTION(RECOMPILE)
+	@ForceRecompile		BIT = 0,				-- forces the query to do parameter sniffing using OPTION(RECOMPILE)
 	@RowNumberColumn	SYSNAME = 'RowNumber',	-- you can optionally change the name of the RowNumber column used for pagination (to avoid collision with existing columns)
 	@RunCommand			BIT = 0					-- determines whether to run the parsed command (otherwise just output the command w/o running it)
 AS BEGIN
@@ -152,6 +160,7 @@ DECLARE @p' + ParamIndex +
 			-- If Operator is single-valued, use already strongly-typed parameter
 			ELSE
 				'@p' + ParamIndex
+			END
 			)
 FROM
 	(
