@@ -46,5 +46,6 @@ This GitHub repository also includes an accompanying Powerpoint presentation, av
 
 The "FilterParse" stored procedures are the "main engine" for this solution. They can be found here:
 
-- [FilterParseJsonParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseJsonParameters.sql)
 - [FilterParseTVPParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseTVPParameters.sql)
+- [FilterParseJsonParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseJsonParameters_Standalone.sql)
+- [FilterParseXmlParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseXmlParameters_Standalone.sql)
