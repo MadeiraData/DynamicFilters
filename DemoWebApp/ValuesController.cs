@@ -167,7 +167,7 @@ namespace DemoWebApp
       SqlConnection conn = new SqlConnection(_connectionString);
       conn.Open();
 
-      using (SqlCommand cmd = new SqlCommand("dbo.FilterParseJsonParameters", conn))
+      using (SqlCommand cmd = new SqlCommand("dbo.FilterParseJsonParameters_Standalone", conn))
       {
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("SourceTableAlias", "Members");
@@ -176,6 +176,7 @@ namespace DemoWebApp
         cmd.Parameters.AddWithValue("JsonParams", JsonConvert.SerializeObject(Json(value.FilterSet).Value));
         //cmd.Parameters.AddWithValue("JsonOrdering", @"{ 'OrderingColumns': [{'columnId': 11, 'isAscending': 1},{ 'columnId': 5, 'isAscending': 1}] }");
         cmd.Parameters.Add(new SqlParameter("ParsedSQL", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output });
+        cmd.Parameters.AddWithValue("RunCommand", true);
 
         DataSet ds = new DataSet();
         SqlDataAdapter da = new SqlDataAdapter(cmd);
