@@ -29,7 +29,7 @@ As mentioned above, this repository also includes a fully-functional demo web ap
 	- Manually publish the [DemoDB.dacpac](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB_Publish/DemoDB.dacpac) file into your database. Or:
 	- Open the DemoDB database project, and **publish** it to your local SQL Server instance.
 3. Optionally: Change the connection string in `\DemoWebClient\appsettings.json` in case you're not using default settings (localhost server, DemoDB database, Windows Authentication).
-4. Whenever you want to run the app: Right click on the `run_core_server.bat` executable and **Run it as Administrator**.
+4. Whenever you want to run the app: Right click on the `\DemoWebClient\runme.bat` executable and **Run it as Administrator**.
 5. The web app should now be available at [http://localhost:5000](http://localhost:5000) (you may also build the app from the web project, and the address would be [http://localhost:61907](http://localhost:61907) )
 
 ## Presentation
