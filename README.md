@@ -12,16 +12,13 @@ The new version introduces two new methods for dynamically parsing filter sets:
 1. Json parameter sets.
 2. Table-Valued Parameters.
 
-As mentioned above, this repository also includes a fully-functional demo web app, implemented in ASP.NET Core MVC + Angular, to demonstrate the intended functionality on the front-end side.
-
-The demo web app was built based on the following tutorial: [https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa](https://medium.com/@levifuller/building-an-angular-application-with-asp-net-core-in-visual-studio-2017-visualized-f4b163830eaa)
+As mentioned above, this repository also includes a fully-functional demo web app, implemented in ASP.NET Core MVC + AngularJS, to demonstrate the intended functionality on the front-end side.
 
 ## Prerequisites
 
-- [Node.js Installed](https://nodejs.org/en/download/)
 - [.NET Core Installed](https://www.microsoft.com/net/core#windowscmd)
 - [Microsoft SQL Server 2016 version or newer](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
-- [Microsoft Visual Studio 2017 Community](https://www.visualstudio.com/downloads/)
+- [Microsoft Visual Studio 2017 Community or newer](https://www.visualstudio.com/downloads/)
 - [SQL Server Data Tools (SSDT) for Visual Studio](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt)
 
 ## Installation & Setup
@@ -31,10 +28,9 @@ The demo web app was built based on the following tutorial: [https://medium.com/
 	- Open the [DemoDB_Create.sql](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB_Publish/DemoDB_Create.sql) script file and run it in your local SQL Server instance (must be **in SQLCMD mode**). Or:
 	- Manually publish the [DemoDB.dacpac](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB_Publish/DemoDB.dacpac) file into your database. Or:
 	- Open the DemoDB database project, and **publish** it to your local SQL Server instance.
-3. Optionally: Change the connection string in `\DemoWebApp\appsettings.json` in case you're not using default settings (localhost server, DemoDB database, Windows Authentication).
-4. This should only be done once: Right click on the `run_me_first_npm_init.bat` executable and **Run it as Administrator** , to install all angular dependencies and build the app.
-5. Whenever you want to run the app: Right click on the `run_core_server.bat` executable and **Run it as Administrator**.
-6. The web app should now be available at [http://localhost:26048/client.html](http://localhost:26048/client.html)
+3. Optionally: Change the connection string in `\DemoWebClient\appsettings.json` in case you're not using default settings (localhost server, DemoDB database, Windows Authentication).
+4. Whenever you want to run the app: Right click on the `\DemoWebClient\runme.bat` executable and **Run it as Administrator**.
+5. The web app should now be available at [http://localhost:5000](http://localhost:5000) (you may also build the app from the web project, and the address would be [http://localhost:61907](http://localhost:61907) )
 
 ## Presentation
 
