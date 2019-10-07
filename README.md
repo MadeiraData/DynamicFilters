@@ -45,3 +45,14 @@ The "FilterParse" stored procedures are the "main engine" for this solution. The
 - [FilterParseTVPParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseTVPParameters.sql)
 - [FilterParseJsonParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseJsonParameters_Standalone.sql)
 - [FilterParseXmlParameters](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseXmlParameters_Standalone.sql)
+
+The last two procedures (for Json and Xml) also have versions which can be used as "wrappers" that relay the information into the first procedure (using Table Valued Parameters). This should improve performance for scenarios involving large filter sets:
+
+- [FilterParseJsonParameters (wrapper)](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseJsonParameters.sql)
+- [FilterParseXmlParameters (wrapper)](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseXmlParameters.sql)
+
+Additionally, these two procedures also have alternate versions that implement "Encapsulation" using an additional inner `sp_executesql` command, which should improve performance issues caused by bad parameter sniffing:
+
+- [FilterParseJsonParameters (with encapsulation)](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseJsonParameters_with_Encapsulation.sql)
+- [FilterParseXmlParameters (with encapsulation)](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseXmlParameters_with_Encapsulation.sql)
+
