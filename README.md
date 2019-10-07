@@ -56,3 +56,11 @@ Additionally, these two procedures also have alternate versions that implement "
 - [FilterParseJsonParameters (with encapsulation)](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseJsonParameters_with_Encapsulation.sql)
 - [FilterParseXmlParameters (with encapsulation)](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Stored%20Procedures/dbo.FilterParseXmlParameters_with_Encapsulation.sql)
 
+## Main Meta-Data Tables
+
+In addition to the stored procedures, the following "meta-data" tables are also needed in order to hold important configuration of tables, columns and operators:
+
+
+- [FilterTables](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Tables/dbo.FilterTables.sql)
+- [FilterColumns](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Tables/dbo.FilterColumns.sql)
+- [FilterOperators](https://github.com/EitanBlumin/DynamicFilters/blob/master/DemoDB/Tables/dbo.FilterOperators.sql)
