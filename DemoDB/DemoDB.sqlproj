@@ -272,7 +272,9 @@
   <ItemGroup>
     <None Include="Scripts\FilterParseJsonParameters_Setup.sql" />
     <None Include="Scripts\FilterParseTVPParameters_Setup.sql" />
-    <None Include="DemoDB.localhost.publish.xml" />
+    <None Include="DemoDB.localhost.publish.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
