@@ -272,6 +272,7 @@
   <ItemGroup>
     <None Include="Scripts\FilterParseJsonParameters_Setup.sql" />
     <None Include="Scripts\FilterParseTVPParameters_Setup.sql" />
+    <None Include="DemoDB.localhost.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
