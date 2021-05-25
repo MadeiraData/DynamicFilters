@@ -2,7 +2,7 @@
 
 This repository includes an example front-end website, and a back-end database, for demonstrating fully-dynamic filtering capabilities (column, operator, value). Fully protected from SQL Injection, and based on "low-code development" principles.
 
-It is the accompanying open-source project for the webinar [Advanced Dynamic Search Queries and How to Protect Them](https://eitanblumin.com/2019/01/08/upcoming-webinar-advanced-dynamic-search-queries-and-how-to-protect-them/).
+It is the accompanying open-source project for the webinar [Advanced Dynamic Search Queries by Eitan Blumin](https://eitanblumin.com/portfolio/advanced-dynamic-search-queries/).
 
 This is an enhanced version of **FilterParseXMLParameters** which is available here:
 
@@ -16,7 +16,7 @@ As mentioned above, this repository also includes a fully-functional demo web ap
 
 ## Prerequisites
 
-- [.NET Core Installed](https://www.microsoft.com/net/core#windowscmd)
+- [.NET Core 2.2 Installed](https://www.microsoft.com/net/core#windowscmd)
 - [Microsoft SQL Server 2016 version or newer](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
 - [Microsoft Visual Studio 2017 Community or newer](https://www.visualstudio.com/downloads/)
 - [SQL Server Data Tools (SSDT) for Visual Studio](https://docs.microsoft.com/en-us/sql/ssdt/download-sql-server-data-tools-ssdt)
