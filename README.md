@@ -14,6 +14,9 @@ The new version introduces two new methods for dynamically parsing filter sets:
 
 As mentioned above, this repository also includes a fully-functional demo web app, implemented in ASP.NET Core MVC + AngularJS, to demonstrate the intended functionality on the front-end side.
 
+![Demo Web Client App Screenshot](demowebclient-screenshot.png "Demo Web Client App")
+
+
 ## Prerequisites
 
 - [.NET Core 2.2 Installed](https://www.microsoft.com/net/core#windowscmd)
